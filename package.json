@@ -1,0 +1,14 @@
+{
+  "name": "onhours",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plan your day around the power cuts: paste the outage notice, list your jobs, get a plan that fits each job into the powered hours.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test"
+  }
+}
