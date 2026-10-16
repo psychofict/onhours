@@ -3,11 +3,7 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import { rulesRead } from "./rules.js";
-
-async function readNotice(text) {
-  return { areas: rulesRead(text), reader: "rules" };
-}
+import { readNotice, aiConfigured } from "./read-notice.js";
 
 const ROOT = fileURLToPath(new URL("../public/", import.meta.url));
 const PORT = Number(process.env.PORT) || 5174;
@@ -71,6 +67,7 @@ function readJson(req) {
 }
 
 export const routes = {
+  "GET /api/status": async (req, res) => send(res, 200, { ai: aiConfigured(process.env) }),
   "POST /api/read-notice": async (req, res) => {
     const { tooBig, body } = await readJson(req);
     if (tooBig) return send(res, 413, { error: "That notice is too long. Paste up to 8,000 characters." });

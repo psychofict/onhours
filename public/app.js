@@ -208,4 +208,15 @@ window.addEventListener("resize", () => {
   if (state.lastPlan && hourPx() !== drawnPx) draw(state.lastPlan, state.lastArea);
 });
 
+async function showStatus() {
+  try {
+    const res = await fetch("/api/status");
+    const { ai } = await res.json();
+    state.ai = ai;
+    setNote(ai ? "AI reader on: loose wording like \u201cfrom 4 in the afternoon\u201d is understood."
+               : "AI reader off: built-in rules read times like 05:00\u201309:00.");
+  } catch { /* the note stays empty */ }
+}
+
 renderJobs();
+showStatus();

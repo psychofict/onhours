@@ -19,7 +19,7 @@ Build mode: fast
   Learner check: Open http://localhost:5174, use the sample notice, read it, choose Riverside East, plan, and check every block sits in a yellow stretch and the beans are under Didn't fit.
   Commit: `Plan a day from a pasted notice`
 
-- [ ] **2. The AI reader handles loose wording, with the rules as fallback**
+- [x] **2. The AI reader handles loose wording, with the rules as fallback**
   Becomes usable: With a model configured, "off from 4 in the afternoon until 8pm" is read; without one, or on failure, the rules answer and the note says so.
   Why now: The riskiest outside dependency, added after the app already works without it.
   PRD ref: `prd.md > Reading the notice`, `prd.md > States and Boundaries` (AI unavailable)
@@ -63,3 +63,4 @@ Activity mode: not started
 ## Revisions
 
 - Merged the first two planned slices (sample day on a timeline; rules reader and area picker) into one — the page could not be tried end to end without a way to read the notice, and the kernel is only meaningful on real outage times. The jobs editor and Copy plan moved into their own modules (`public/jobs.js`, `public/share.js`) so the last slice adds them without rewriting the page script.
+- Verified the AI reader live on 16 Oct 2026 with a small model (gpt-oss-20b) through the team's OpenAI-compatible gateway: the sample notice read in 1.5 s, all six areas correct, Hillside Extension 02:00–06:00 and 16:00–20:00 (the rules read only 02:00–06:00). One call cost US$0.0002.
