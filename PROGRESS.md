@@ -11,7 +11,9 @@ Started from an empty folder with the Devpost Learn skill pack (`npx skills add 
 - Checked at 1280 and 390 pixels wide in a headless browser: the sample journey places five jobs and lists one that does not fit, Copy plan copies the text, no console errors, light background.
 - `node --test`: 16 tests pass.
 
+- Final review: another area (Kopje Heights), an empty job row (listed as skipped) and a blocked clipboard (the plan shows selected for copying by hand) all behave as the PRD says. `devpost/app-map.html` written and checked with scripts off.
+- Demo video: `submission/onhours-demo.mp4`, 80 seconds, 1280 x 800, recorded with the AI reader on. Draft submission text: `submission/devpost-text.md`.
+
 ## Next
 
-- Final review, the app map (`devpost/app-map.html`) and the demo video.
-- Publishing the repository and the video, and the Devpost submission, are separate steps that have not been taken.
+- Publish the repository, upload the video publicly to YouTube or Vimeo, and complete the Devpost form. None of these has been done.
