@@ -1,0 +1,19 @@
+# Personal learning context stays out of commits
+/devpost/learner-profile.md
+
+# Local credentials
+.env
+.env.*
+!.env.example
+
+# Skill pack copies: reinstall with the command in README.md (skills-lock.json pins them)
+/.agents/
+/.claude/
+/agent/
+
+# Recording scratch
+/submission/raw/
+node_modules/
+
+# Generated fleet context, never committed
+CLAUDE.local.md
