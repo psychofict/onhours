@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>OnHours · App map</title>
+<style>
+  :root { --paper:#FBF8F1; --card:#fff; --ink:#1D1B16; --muted:#6B665C; --line:#ECE6DA; --sun:#F5C04A; --tint:#FCEFC9; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
+  main { width:min(860px,100% - 32px); margin:0 auto; padding:48px 0 64px; }
+  h1 { font:400 44px/1.1 Georgia,"Iowan Old Style",serif; margin:0 0 12px; letter-spacing:-0.02em; }
+  h2 { font:400 26px/1.2 Georgia,"Iowan Old Style",serif; margin:40px 0 12px; }
+  p.lede { font-size:18px; color:#3B3830; margin:0; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:20px 22px; margin:12px 0; }
+  code { font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; background:#F6F1E6; padding:1px 6px; border-radius:6px; }
+  ol.route { padding-left:22px; } ol.route li { margin:0 0 14px; }
+  details { border:1px solid var(--line); border-radius:12px; padding:10px 14px; background:#FFFDF8; margin:8px 0; }
+  summary { cursor:pointer; font-weight:600; }
+  summary:focus-visible, a:focus-visible { outline:3px solid #2F6FEB; outline-offset:2px; }
+  .tag { display:inline-block; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  svg { width:100%; height:auto; display:block; }
+  .small { font-size:14px; color:var(--muted); }
+</style>
+</head>
+<body>
+<main>
+  <span class="tag">App map · snapshot</span>
+  <h1>OnHours, in three pieces</h1>
+  <p class="lede">OnHours turns a pasted power-cut notice into a day plan. A small Node server reads the notice (with an AI model if one is set up, otherwise with built-in rules), and a planner in the page places each job inside an unbroken powered stretch.</p>
+
+  <h2>One action, end to end: Plan my day</h2>
+  <div class="card">
+    <svg viewBox="0 0 800 210" role="img" aria-labelledby="flow-title flow-desc">
+      <title id="flow-title">From a pasted notice to a drawn plan</title>
+      <desc id="flow-desc">The page posts the notice to the server's read-notice route, which uses the AI reader or the rules and returns areas. The page then calls planDay and draws the timeline.</desc>
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6B665C"/></marker></defs>
+      <g font-family="system-ui,sans-serif" font-size="13" fill="#1D1B16">
+        <rect x="10" y="20" width="170" height="70" rx="14" fill="#FFFDF8" stroke="#DCD5C6"/>
+        <text x="95" y="48" text-anchor="middle" font-weight="600">Read the notice</text>
+        <text x="95" y="68" text-anchor="middle" fill="#6B665C">public/app.js</text>
+        <rect x="250" y="20" width="230" height="70" rx="14" fill="#FFFDF8" stroke="#DCD5C6"/>
+        <text x="365" y="48" text-anchor="middle" font-weight="600">POST /api/read-notice</text>
+        <text x="365" y="68" text-anchor="middle" fill="#6B665C">server/read-notice.js · rules.js</text>
+        <rect x="560" y="20" width="230" height="70" rx="14" fill="#FCEFC9" stroke="#F5C04A"/>
+        <text x="675" y="48" text-anchor="middle" font-weight="600">AI model (optional)</text>
+        <text x="675" y="68" text-anchor="middle" fill="#6B665C">any OpenAI-compatible API</text>
+        <rect x="250" y="125" width="230" height="70" rx="14" fill="#FFFDF8" stroke="#DCD5C6"/>
+        <text x="365" y="153" text-anchor="middle" font-weight="600">planDay()</text>
+        <text x="365" y="173" text-anchor="middle" fill="#6B665C">public/planner.js</text>
+        <rect x="560" y="125" width="230" height="70" rx="14" fill="#FCEFC9" stroke="#F5C04A"/>
+        <text x="675" y="153" text-anchor="middle" font-weight="600">Timeline and Didn't fit</text>
+        <text x="675" y="173" text-anchor="middle" fill="#6B665C">draw() in public/app.js</text>
+      </g>
+      <g stroke="#6B665C" stroke-width="1.5" fill="none" marker-end="url(#a)">
+        <path d="M180 55H246"/><path d="M480 55H556"/><path d="M365 90V121"/><path d="M480 160H556"/>
+      </g>
+    </svg>
+    <p class="small">Nothing is stored. The only outside service is the optional model, and the app works without it.</p>
+  </div>
+
+  <h2>A reference route through the code</h2>
+  <p class="small">Three stops, in the order the action runs. Search for the names shown.</p>
+  <ol class="route">
+    <li><strong><code>public/app.js</code> → <code>readNotice()</code> and <code>plan()</code></strong><br>The page sends the text to the server, fills the area list from the reply, then calls the planner with the chosen area's outages and the jobs from <code>public/jobs.js</code>.</li>
+    <li><strong><code>server/read-notice.js</code> → <code>readNotice()</code>, <code>validateAreas()</code></strong><br>With the three <code>LLM_</code> variables set, it asks the model for one fixed JSON shape and checks every field. Any failure falls back to <code>rulesRead()</code> in <code>server/rules.js</code>, and the reply carries a note the page shows.</li>
+    <li><strong><code>public/planner.js</code> → <code>planDay()</code></strong><br>Turns outages into powered stretches between 05:00 and 23:00, sorts jobs (must-do, then longest), and gives each the earliest free gap that holds it in one go. A job with no such gap gets a one-line reason.</li>
+  </ol>
+
+  <h2>To change this, start here</h2>
+  <details><summary>The day's start and end (05:00 to 23:00)</summary><p>The <code>dayStart</code> and <code>dayEnd</code> defaults of <code>planDay()</code> in <code>public/planner.js</code>. The timeline reads them from the plan, so the drawing follows.</p></details>
+  <details><summary>How jobs are ordered</summary><p>The <code>valid.sort(...)</code> call in <code>planDay()</code>. The test <em>"sample day for Riverside East places jobs in unbroken powered stretches"</em> in <code>test/planner.test.js</code> pins the current order, so update it with the change.</p></details>
+  <details><summary>The sample notice and jobs</summary><p><code>public/sample.js</code>. Keep the data fictional.</p></details>
+  <details><summary>What the AI is asked</summary><p><code>SYSTEM_PROMPT</code> in <code>server/read-notice.js</code>. If the JSON shape changes, change <code>validateAreas()</code> and <code>test/read-notice.test.js</code> with it.</p></details>
+  <details><summary>Colours and type</summary><p>The custom properties at the top of <code>public/styles.css</code>. The page is light only.</p></details>
+
+  <h2>A practice to reuse</h2>
+  <div class="card">
+    <p><strong>Give the model the reading, keep the deciding in code.</strong> The spec settled that the model only turns loose wording into a fixed JSON shape, and plain code places the jobs (<code>devpost/spec.md</code>, "Decisions and Open Issues"). That made the planner testable to the minute (<code>test/planner.test.js</code>) and let the app fall back to rules when the model fails (<code>test/read-notice.test.js</code>). On another project, the same split works wherever AI meets messy input: ask for a strict shape, check every field, and keep a plain fallback.</p>
+  </div>
+
+  <h2>Run it again</h2>
+  <p><code>node server/index.js</code>, then open <a href="http://localhost:5174">http://localhost:5174</a>. Tests: <code>node --test</code>.</p>
+  <p class="small">This map is a snapshot of the code after the build's final review on 16 October 2026 and can drift as the code changes.</p>
+</main>
+</body>
+</html>

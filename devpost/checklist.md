@@ -42,23 +42,24 @@ Build mode: fast
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 1, the sample day on screen at 1280 and 390 px wide. Feedback: short blocks clipped their names on a phone and "2 h" wrapped; fixed with a single-line short block and non-breaking durations.
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed — the full journey run at 1280 and 390 px, with an added job, an empty job row, a different area (Kopje Heights) and Copy plan. Feedback: job names were cut off in the editor; fixed with a two-row job card.
 
 ## Final Review
 
-- [ ] Final review complete — feedback resolved and learner confirms ready to ship
+- [x] Job names fully visible in the editor at both widths (two-row job card), verified by screenshot
+- [x] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — guided route, focused alternative, prior practice connected, or brief recap
-- [ ] Optional edit and transfer reflection addressed — offered/declined/already covered/not applicable as appropriate
-- [ ] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [x] Learning activity complete — focused alternative: the spec's open question (does a small model return the JSON shape reliably?) was answered with a live read and the fallback tests
+- [x] Optional edit and transfer reflection addressed — not applicable; covered by the practice note in the app map
+- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
 
-Activity and evidence: not started
-Route and stops: not started
-Edit outcome: not started
-Reflection: not started
-Activity mode: not started
+Activity and evidence: live AI read of the sample notice (all six areas, Hillside Extension 02:00–06:00 and 16:00–20:00); `test/read-notice.test.js` covers the reply check and the fallback.
+Route and stops: reference route only, listed in the app map (`public/app.js` readNotice/plan, `server/read-notice.js` readNotice/validateAreas, `public/planner.js` planDay).
+Edit outcome: not applicable.
+Reflection: not applicable.
+Activity mode: focused alternative.
 
 ## Revisions
 
