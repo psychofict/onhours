@@ -1,5 +1,7 @@
-import { planDay, toClock, formatDuration } from "./planner.js";
+import { planDay, planToText, toClock } from "./planner.js";
 import { SAMPLE_NOTICE, SAMPLE_JOBS } from "./sample.js";
+import { createJobsEditor } from "./jobs.js";
+import { wireCopy } from "./share.js";
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -11,17 +13,9 @@ const els = {
 
 const state = { areas: [], lastPlan: null, lastArea: "" };
 
-// ---- Jobs (fixed sample list in this slice) ----
-function getJobs() { return SAMPLE_JOBS; }
-function renderJobs() {
-  els.jobs.innerHTML = "";
-  for (const job of SAMPLE_JOBS) {
-    const li = document.createElement("li");
-    li.className = "job-static";
-    li.textContent = `${job.name} · ${nb(formatDuration(job.minutes))}${job.must ? " · must do" : ""}`;
-    els.jobs.append(li);
-  }
-}
+// ---- Jobs ----
+const editor = createJobsEditor(els.jobs, $("add-job"), SAMPLE_JOBS);
+const getJobs = () => editor.getJobs();
 
 // ---- Reading the notice ----
 function setNote(html, warn = false) {
@@ -94,6 +88,7 @@ function plan() {
   const result = planDay({ outages: area.off, jobs: getJobs() });
   state.lastPlan = result;
   state.lastArea = area.name;
+  $("copied").textContent = "";
   draw(result, area.name);
   if (window.matchMedia("(max-width: 920px)").matches) $("plan-card").scrollIntoView({ behavior: "smooth", block: "start" });
 }
@@ -218,5 +213,5 @@ async function showStatus() {
   } catch { /* the note stays empty */ }
 }
 
-renderJobs();
+wireCopy($("copy"), $("copied"), $("plan-text"), () => (state.lastPlan ? planToText(state.lastPlan, state.lastArea) : ""));
 showStatus();

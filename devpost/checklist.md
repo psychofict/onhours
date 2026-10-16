@@ -29,7 +29,7 @@ Build mode: fast
   Learner check: Read the sample with the AI on and look at Hillside Extension's outages.
   Commit: `Read notices with an AI model, falling back to rules`
 
-- [ ] **3. The jobs list can be edited and the plan copied**
+- [x] **3. The jobs list can be edited and the plan copied**
   Becomes usable: Add, edit and remove jobs; Copy plan puts the message on the clipboard.
   Why now: Completes the loop for a real household once the plan and the input both work.
   PRD ref: `prd.md > The jobs list`, `prd.md > Sharing the plan`
