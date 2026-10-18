@@ -14,6 +14,14 @@ Started from an empty folder with the Devpost Learn skill pack (`npx skills add 
 - Final review: another area (Kopje Heights), an empty job row (listed as skipped) and a blocked clipboard (the plan shows selected for copying by hand) all behave as the PRD says. `devpost/app-map.html` written and checked with scripts off.
 - Demo video: `submission/onhours-demo.mp4`, 80 seconds, 1280 x 800, recorded with the AI reader on. Draft submission text: `submission/devpost-text.md`.
 
+## 17 October 2026
+
+- Demo video on YouTube: https://youtu.be/JEv8nrvxmA4
+
+## 18 October 2026
+
+- Added the MIT `LICENSE` the hackathon rules ask for, filled the repository and video links in `submission/devpost-text.md`, and published the repository at https://github.com/psychofict/onhours.
+
 ## Next
 
-- Publish the repository, upload the video publicly to YouTube or Vimeo, and complete the Devpost form. None of these has been done.
+- Complete and submit the Devpost form from `submission/devpost-text.md`.

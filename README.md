@@ -60,6 +60,10 @@ The tests cover the planner (the sample day's exact placements, no job crossing 
 
 Fonts: Newsreader and Inter, under the SIL Open Font License (`public/fonts/`).
 
+## Licence
+
+OnHours is released under the MIT License (see [`LICENSE`](LICENSE)). The fonts keep their own SIL Open Font License.
+
 ## Re-installing the skill pack
 
 The Devpost Learn skills are not stored in this repository. To run them again in a checkout:

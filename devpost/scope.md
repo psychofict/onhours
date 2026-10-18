@@ -20,7 +20,7 @@ She opens OnHours, pastes the notice she was sent, picks her area, adds or keeps
 Calm and practical, like a well-made paper planner on a kitchen table: warm off-white paper, ink-dark type, and a sunlight yellow that marks when the power is on. Editorial serif for headings, a clean sans for everything you tap. No dashboards, no dark mode, no alarm-red. Reference for tone: the clarity of a printed train timetable.
 
 ## Why This Matters to the Learner
-Ebenworks builds AI for the people who keep daily life running, and power cuts shape the day for millions of them. This is a small, honest test of that idea: can a pasted message become a plan someone would actually follow?
+Ebenworks is an AI product company for the people who keep the world running: the shop owner, the nurse, the family carer, the contractor, the organiser and the artist. Power cuts shape the day for millions of them. This is a small, honest test of that idea: can a pasted message become a plan someone would actually follow?
 
 ## What "Working" Looks Like
 Open the page, press Use the sample notice, press Read the notice, pick Riverside East, keep the sample jobs, press Plan my day. The timeline shows the area's three outages, each job sits inside a powered stretch long enough for it, and must-do jobs are placed first. The "oh, that's cool" beat: a job too long for any powered stretch is listed with the reason ("needs 5 h 30 min in one go; the longest powered stretch left is 2 h 15 min"), and Copy plan gives a message ready for the family chat.

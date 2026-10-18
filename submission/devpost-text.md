@@ -1,6 +1,6 @@
 # Devpost submission draft: OnHours
 
-Draft for the Build With AI: Basics submission form. Not yet submitted.
+Text for the Build With AI: Basics submission form.
 
 ## Project name
 
@@ -60,5 +60,5 @@ javascript, node.js, html, css, openai-compatible-api
 
 ## Links
 
-- Repository: to be added when the repository is published
-- Video: to be added when the video is uploaded (YouTube or Vimeo, public)
+- Repository: https://github.com/psychofict/onhours
+- Video: https://youtu.be/JEv8nrvxmA4
