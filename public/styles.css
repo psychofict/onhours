@@ -261,7 +261,7 @@ textarea:focus, input:focus { border-color: var(--blue); outline: none; box-shad
 .misses .ok { margin: 0; color: var(--ash); font-size: 14.5px; display: flex; align-items: center; gap: 8px; }
 .misses .ok .ico { color: var(--olive-deep); }
 .share { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-.share .btn { flex: 1 1 150px; padding: 0 18px; font-size: 15px; }
+.share .btn { flex: 1 1 auto; padding: 0 18px; font-size: 15px; white-space: nowrap; }
 .copied { margin: 10px 0 0; min-height: 22px; font-size: 14px; color: var(--ash); }
 .plan-text { font-size: 13px; min-height: 160px; }
 
