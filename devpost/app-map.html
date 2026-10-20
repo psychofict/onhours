@@ -28,7 +28,7 @@
 <main>
   <span class="tag">App map · snapshot of version 2</span>
   <h1>OnHours, in four pieces</h1>
-  <p class="lede">OnHours turns a photo or pasted text of a power-cut notice into a day plan that still opens with no network. A small Node server lets an AI model read the notice (or built-in rules, when there is text). Plain code in the page places every job. A service worker keeps the page, and browser storage keeps the household.</p>
+  <p class="lede">OnHours turns a photo or pasted text of a power-cut notice into a day plan that still opens with no network. A small Node server lets an AI model read the notice (or built-in rules, when there is text). Plain code in the page places every job, and compares two plans when a revised notice arrives. A service worker keeps the page, and browser storage keeps the household.</p>
 
   <h2>One action, end to end: a photo becomes a plan</h2>
   <div class="card">
@@ -78,7 +78,8 @@
   <details><summary>The day's start and end (05:00 to 23:00)</summary><p>The <code>dayStart</code> and <code>dayEnd</code> defaults of <code>planDay()</code> in <code>public/planner.js</code>. The chart reads them from the plan, so the drawing follows.</p></details>
   <details><summary>How jobs are ordered, or how backup is spent</summary><p>The <code>valid.sort(...)</code> call and the backup branch in <code>planDay()</code>. The tests <em>"sample day for Riverside East with no backup places four jobs and misses the beans"</em> and <em>"with one hour of backup the beans run across the evening cut"</em> in <code>test/planner.test.js</code> pin the sample day to the minute, and a loop of random days checks that no job overlaps another or crosses a cut except on backup.</p></details>
   <details><summary>What the AI is asked</summary><p><code>TEXT_PROMPT</code> and <code>IMAGE_PROMPT</code> in <code>server/read-notice.js</code>. If the JSON shape changes, change <code>validateAreas()</code>, <code>test/read-notice.test.js</code> and <code>test/read-photo.test.js</code> with it.</p></details>
-  <details><summary>The sample notice, photo and jobs</summary><p><code>public/sample.js</code> and <code>public/sample-notice.jpg</code> (made by <code>tools/sample-photo/make-photo.sh</code>). Keep the data fictional.</p></details>
+  <details><summary>What the "The notice changed" card says</summary><p><code>diffPlans(before, after)</code> in <code>public/planner.js</code> compares two plans made from the same jobs and gives each job that moved, no longer fits or now fits a plain reason. <code>acceptAreas()</code> in <code>public/app.js</code> calls it when a new notice still lists the chosen area, and <code>renderChanges()</code> in <code>public/draw.js</code> draws the card. The tests in <code>test/planner.test.js</code> (<em>"a job that moves because another takes its place says so"</em> and the two before it) pin the wording and the order.</p></details>
+  <details><summary>The sample notices, photos and jobs</summary><p><code>public/sample.js</code> holds the sample notice, a short revised notice and the jobs. <code>public/sample-notice.jpg</code> and <code>public/sample-notice-2.jpg</code> (a messier one) are made by <code>tools/sample-photo/make-photo.sh</code> from <code>notice.html</code> and <code>notice2.html</code>. Keep the data fictional.</p></details>
   <details><summary>Colours and type</summary><p>The custom properties at the top of <code>public/styles.css</code>. Yellow means power is on, olive means backup, blue means act. The page is light only.</p></details>
   <details><summary>Adding a file to the page</summary><p>List it in <code>SHELL</code> in <code>public/sw.js</code> and bump <code>VERSION</code>. <code>test/sw.test.js</code> fails if a file in <code>public/</code> is missing from the list.</p></details>
 
@@ -89,7 +90,7 @@
 
   <h2>Run it again</h2>
   <p><code>node server/index.js</code>, then open <a href="http://localhost:5174">http://localhost:5174</a> and press Try the sample day. Tests: <code>node --test</code>.</p>
-  <p class="small">This map is a snapshot of the code after the version 2 build on 20 October 2026 and can drift as the code changes.</p>
+  <p class="small">This map is a snapshot of the code after the version 2 build on 20 October 2026 and the sixth slice (what moved when the notice changes) on 21 October 2026. It can drift as the code changes.</p>
 </main>
 </body>
 </html>
