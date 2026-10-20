@@ -10,6 +10,8 @@ OnHours is a phone-first, installable one-page proof of concept: photograph or p
 
 - `node server/index.js`, then open http://localhost:5174. Node 20 or newer, no packages.
 - `node --test` runs every test in `test/`. Run it before each commit.
+- With the app running, `node tools/check-journey.cjs` (the whole journey at 1280 and 390 px) and `node tools/check-acceptance.cjs` (every acceptance line of `devpost/prd.md`; it starts its own copy with no AI reader on port 5199) need `playwright-core`. Run them after a change to the page.
+- The demo film is built by script from the running app: `submission/BUILD-VIDEO.md`. Every shot is timed from the narration (`tools/video/segments.cjs`), so a changed narration line means re-recording and composing again.
 - The AI reader is off unless `LLM_BASE_URL`, `LLM_API_KEY` and `LLM_MODEL` are set; photo reading also needs `LLM_VISION_MODEL` (see `.env.example` and README.md).
 - `?now=13:30` on the address sets the "Right now" clock, for demonstrations.
 
