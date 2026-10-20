@@ -1,220 +1,311 @@
-import { planDay, planToText, toClock } from "./planner.js";
-import { SAMPLE_NOTICE, SAMPLE_JOBS } from "./sample.js";
+import { planDay, planToText, formatDuration } from "./planner.js";
+import { nowStatus } from "./now.js";
+import { rulesRead } from "./rules.js";
+import { parseJobs } from "./jobtext.js";
+import { SAMPLE_NOTICE, SAMPLE_JOBS, SAMPLE_AREA } from "./sample.js";
 import { createJobsEditor } from "./jobs.js";
 import { wireCopy } from "./share.js";
+import { el, icon, renderChart, renderMini, renderNow, renderMisses } from "./draw.js";
 
 const $ = (id) => document.getElementById(id);
-const els = {
-  notice: $("notice"), useSample: $("use-sample"), read: $("read"), readerNote: $("reader-note"),
-  area: $("area"), areaHint: $("area-hint"), offLine: $("off-line"),
-  jobs: $("jobs"), plan: $("plan"),
-  planArea: $("plan-area"), planEmpty: $("plan-empty"), timeline: $("timeline"), planFoot: $("plan-foot"), misses: $("misses"),
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+const state = {
+  tab: "photo",
+  areas: [],
+  area: "",
+  backupMinutes: 0,
+  day: "today",
+  ai: false,
+  vision: false,
+  plan: null,
+  planArea: "",
 };
 
-const state = { areas: [], lastPlan: null, lastArea: "" };
+// A page address ending in ?now=14:20 sets the clock, for demonstrations and tests.
+const clockOverride = (() => {
+  const v = new URLSearchParams(location.search).get("now");
+  const m = /^(\d{1,2}):(\d{2})$/.exec(v || "");
+  return m && Number(m[1]) < 24 && Number(m[2]) < 60 ? `${String(m[1]).padStart(2, "0")}:${m[2]}` : null;
+})();
+function nowMinutes() {
+  if (clockOverride) { const [h, m] = clockOverride.split(":").map(Number); return h * 60 + m; }
+  const d = new Date();
+  return d.getHours() * 60 + d.getMinutes();
+}
 
 // ---- Jobs ----
-const editor = createJobsEditor(els.jobs, $("add-job"), SAMPLE_JOBS);
-const getJobs = () => editor.getJobs();
+const editor = createJobsEditor($("jobs"), { initialJobs: SAMPLE_JOBS, onChange: () => changed() });
+$("add-job").addEventListener("click", () => editor.addEmpty());
 
-// ---- Reading the notice ----
-function setNote(html, warn = false) {
-  els.readerNote.innerHTML = html;
-  els.readerNote.classList.toggle("warn", warn);
-}
-
-async function readNotice() {
-  const text = els.notice.value;
-  if (!text.trim()) { setNote("Paste a notice first, or use the sample notice.", true); els.notice.focus(); return; }
-  els.read.setAttribute("aria-busy", "true");
-  els.read.textContent = "Reading…";
-  try {
-    const res = await fetch("/api/read-notice", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
-    const data = await res.json();
-    if (!res.ok) { setNote(data.error || "Could not read that notice.", true); return; }
-    state.areas = data.areas || [];
-    const label = data.reader === "ai" ? "Read by AI" : "Read by built-in rules";
-    const extra = data.note ? ` ${escapeHtml(data.note)}` : "";
-    if (!state.areas.length) {
-      setNote(`<span class="pill">${label}</span>No outage times found. Check the notice has times like 05:00–09:00.`, true);
-    } else {
-      setNote(`<span class="pill">${label}</span>${state.areas.length} area${state.areas.length === 1 ? "" : "s"} found.${extra}`);
-    }
-    fillAreas();
-  } catch {
-    setNote("Could not reach the reader. Is the server running?", true);
-  } finally {
-    els.read.removeAttribute("aria-busy");
-    els.read.textContent = "Read the notice";
-  }
-}
-
-function fillAreas() {
-  const previous = els.area.value;
-  els.area.innerHTML = "";
-  if (!state.areas.length) {
-    els.area.append(new Option("No areas yet", ""));
-    els.area.disabled = true;
-    els.areaHint.textContent = "Read the notice to see the areas it names.";
-    els.offLine.textContent = "";
+$("words-form").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const input = $("words");
+  const { jobs, unread } = parseJobs(input.value);
+  const note = $("words-note");
+  if (!jobs.length) {
+    note.className = "words-note warn";
+    note.textContent = unread.length ? `I couldn't find a time in: ${unread.join("; ")}. Try "iron 45 min".` : "Type a job and how long it takes, like “iron 45 min”.";
     return;
   }
-  els.area.disabled = false;
-  els.area.append(new Option("Choose your area", ""));
-  for (const a of state.areas) els.area.append(new Option(a.name, a.name));
-  els.areaHint.textContent = "Choose yours, then check its times against the notice.";
-  if (state.areas.some((a) => a.name === previous)) els.area.value = previous;
-  showOffLine();
+  editor.addJobs(jobs);
+  input.value = "";
+  note.className = unread.length ? "words-note warn" : "words-note";
+  note.textContent = `Added ${jobs.length} job${jobs.length === 1 ? "" : "s"}.${unread.length ? ` I couldn't find a time in: ${unread.join("; ")}.` : ""}`;
+});
+
+// ---- Tabs ----
+function setTab(name, focus = false) {
+  state.tab = name;
+  for (const t of ["photo", "text"]) {
+    const tab = $(`tab-${t}`);
+    const on = t === name;
+    tab.setAttribute("aria-selected", String(on));
+    tab.tabIndex = on ? 0 : -1;
+    $(`panel-${t}`).hidden = !on;
+    if (on && focus) tab.focus();
+  }
+}
+$("tab-photo").addEventListener("click", () => setTab("photo"));
+$("tab-text").addEventListener("click", () => setTab("text"));
+document.querySelector(".tabs").addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  e.preventDefault();
+  setTab(state.tab === "photo" ? "text" : "photo", true);
+});
+
+// ---- The reader's note ----
+function setNote(text, { tag = "", kind = "" } = {}) {
+  const n = $("reader-note");
+  n.className = `reader-note${kind ? ` ${kind}` : ""}`;
+  n.replaceChildren(...(tag ? [el("span", { class: "tag", text: tag })] : []), document.createTextNode(text));
 }
 
-function selectedArea() { return state.areas.find((a) => a.name === els.area.value) || null; }
+// ---- Reading a text notice ----
+async function readText() {
+  const text = $("notice").value;
+  if (!text.trim()) { setNote("Paste a notice first, or use the sample text.", { kind: "warn" }); $("notice").focus(); return; }
+  const btn = $("read");
+  btn.setAttribute("aria-busy", "true");
+  btn.disabled = true;
+  showSkeleton();
+  try {
+    let data = null;
+    if (state.ai && navigator.onLine) {
+      try {
+        const res = await fetch("/api/read-notice", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
+        if (res.ok) data = await res.json();
+        else if (res.status === 413 || res.status === 400) { const j = await res.json().catch(() => ({})); setNote(j.error || "That notice is too long.", { kind: "warn" }); fillAreas(); return; }
+      } catch { /* fall through to the rules in the page */ }
+    }
+    if (!data) data = { areas: rulesRead(text), reader: "rules", note: state.ai && navigator.onLine ? "The AI reader was unavailable, so the built-in rules read it." : "" };
+    acceptAreas(data);
+  } finally {
+    btn.removeAttribute("aria-busy");
+    btn.disabled = false;
+  }
+}
 
-function showOffLine() {
+function acceptAreas(data) {
+  state.areas = data.areas || [];
+  const label = data.reader === "ai" ? (data.from === "photo" ? "Read from the photo by AI" : "Read by AI") : "Read by built-in rules";
+  if (!state.areas.length) {
+    setNote("No outage times found. Check the notice has times like 05:00–09:00.", { tag: label, kind: "warn" });
+  } else {
+    const n = state.areas.length;
+    setNote(`${n} area${n === 1 ? "" : "s"} found.${data.note ? ` ${data.note}` : ""}`, { tag: label });
+  }
+  fillAreas();
+}
+
+function showSkeleton() {
+  const box = $("areas");
+  box.replaceChildren(el("legend", { class: "sr-only", text: "Areas in the notice" }), ...[0, 1, 2].map(() => el("span", { class: "chip skeleton" }, el("span", { text: "…" }))));
+  $("area-hint").textContent = "Reading the notice…";
+}
+
+// ---- Choosing the area ----
+function fillAreas() {
+  const box = $("areas");
+  const keep = state.area;
+  box.replaceChildren(el("legend", { class: "sr-only", text: "Areas in the notice" }));
+  if (!state.areas.length) {
+    box.append(el("p", { class: "chips-empty", id: "areas-empty", text: "No areas yet." }));
+    $("area-hint").textContent = "Read the notice to see the areas it names.";
+    state.area = "";
+    showOff();
+    return;
+  }
+  $("area-hint").textContent = "Choose yours, then check its times against the notice.";
+  for (const a of state.areas) {
+    const input = el("input", { type: "radio", name: "area", value: a.name });
+    input.addEventListener("change", () => { state.area = a.name; showOff(); changed(); });
+    box.append(el("label", { class: "chip" }, input, el("span", { text: a.name })));
+  }
+  if (state.areas.some((a) => a.name === keep)) selectArea(keep, false);
+  else { state.area = ""; showOff(); }
+}
+
+function selectArea(name, announce = true) {
+  state.area = name;
+  for (const i of $("areas").querySelectorAll("input")) i.checked = i.value === name;
+  showOff();
+  if (announce) changed();
+}
+
+function selectedArea() { return state.areas.find((a) => a.name === state.area) || null; }
+
+function showOff() {
   const area = selectedArea();
-  if (!area) { els.offLine.textContent = ""; return; }
-  els.offLine.innerHTML = area.off.length
-    ? `<strong>Off</strong> ${area.off.map((o) => `${o.start}–${o.end}`).join(", ")}`
-    : "<strong>No outages listed</strong> for this area.";
+  $("off-block").hidden = !area;
+  if (!area) return;
+  const line = $("off-line");
+  line.replaceChildren();
+  if (area.off.length) line.append(el("strong", { text: "Off " }), document.createTextNode(area.off.map((o) => `${o.start}–${o.end}`).join(", ")));
+  else line.append(el("strong", { text: "No outages listed" }), document.createTextNode(" for this area."));
+  renderMini($("area-chart"), planDay({ outages: area.off, jobs: [] }));
 }
+
+// ---- Backup ----
+function setBackup(minutes, announce = true) {
+  state.backupMinutes = Math.max(0, Math.min(12 * 60, minutes));
+  $("backup-value").textContent = state.backupMinutes ? formatDuration(state.backupMinutes) : "None";
+  $("backup-minus").disabled = state.backupMinutes === 0;
+  $("backup-plus").disabled = state.backupMinutes === 12 * 60;
+  if (announce) changed();
+}
+$("backup-minus").addEventListener("click", () => setBackup(state.backupMinutes - 30));
+$("backup-plus").addEventListener("click", () => setBackup(state.backupMinutes + 30));
+
+// ---- Today or tomorrow ----
+function dayLabel(offset) {
+  const d = new Date();
+  d.setDate(d.getDate() + offset);
+  return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
+}
+function setDay(day, announce = true) {
+  state.day = day;
+  $("day-today").setAttribute("aria-checked", String(day === "today"));
+  $("day-tomorrow").setAttribute("aria-checked", String(day === "tomorrow"));
+  $("plan-title").textContent = day === "today" ? "Today" : "Tomorrow";
+  $("plan-date").textContent = dayLabel(day === "today" ? 0 : 1);
+  if (announce) changed();
+}
+$("day-today").addEventListener("click", () => setDay("today"));
+$("day-tomorrow").addEventListener("click", () => setDay("tomorrow"));
 
 // ---- Planning and drawing ----
-function plan() {
+function planNow({ scroll = false } = {}) {
   const area = selectedArea();
+  const note = $("plan-note");
+  note.className = "reader-note";
+  note.textContent = "";
   if (!area) {
-    setNote(state.areas.length ? "Choose your area first." : "Read a notice first, or use the sample notice.", true);
-    (state.areas.length ? els.area : els.notice).focus();
+    note.classList.add("warn");
+    note.textContent = state.areas.length ? "Choose your area first." : "Read a notice first, or try the sample day.";
+    (state.areas.length ? $("areas").querySelector("input") : $("hero-sample"))?.focus();
     return;
   }
-  const backupMinutes = Math.round((Number($("backup").value) || 0) * 60);
-  const result = planDay({ outages: area.off, jobs: getJobs(), backupMinutes });
-  state.lastPlan = result;
-  state.lastArea = area.name;
+  const first = state.plan === null;
+  state.plan = planDay({ outages: area.off, jobs: editor.getJobs(), backupMinutes: state.backupMinutes });
+  state.planArea = area.name;
   $("copied").textContent = "";
-  draw(result, area.name);
-  if (window.matchMedia("(max-width: 920px)").matches) $("plan-card").scrollIntoView({ behavior: "smooth", block: "start" });
-}
-
-function hourPx() {
-  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--hour")) || 44;
-}
-
-function draw(result, areaName) {
-  const px = hourPx();
-  drawnPx = px;
-  const y = (min) => ((min - result.dayStart) / 60) * px;
-  const height = y(result.dayEnd);
-
-  els.planArea.textContent = `Your day in ${areaName}`;
-  els.planEmpty.hidden = true;
-  els.timeline.hidden = false;
-  els.timeline.innerHTML = "";
-
-  const hours = document.createElement("div");
-  hours.className = "hours";
-  hours.style.height = `${height}px`;
-  const track = document.createElement("div");
-  track.className = "track";
-  track.style.height = `${height}px`;
-
-  for (let m = result.dayStart; m <= result.dayEnd; m += 60) {
-    const label = document.createElement("span");
-    label.style.top = `${y(m)}px`;
-    label.textContent = toClock(m);
-    hours.append(label);
-    const tick = document.createElement("div");
-    tick.className = "tick";
-    tick.style.top = `${y(m)}px`;
-    track.append(tick);
-  }
-  for (const p of result.powered) track.append(band("on", p, y));
-  for (const o of result.off) {
-    const b = band("off", o, y);
-    const tag = document.createElement("span");
-    tag.className = "band-label";
-    tag.textContent = `Power off ${toClock(o.start)}–${toClock(o.end)}`;
-    b.append(tag);
-    track.append(b);
-  }
-  result.placed.forEach((p, i) => {
-    const block = document.createElement("div");
-    block.className = `block${p.job.must ? " must" : ""}${p.onBackup.length ? " on-backup" : ""}`;
-    block.style.top = `${y(p.start) + 2}px`;
-    const h = Math.max(y(p.end) - y(p.start) - 4, 24);
-    block.style.height = `${h}px`;
-    if (h < 48) block.classList.add("short");
-    block.style.animationDelay = `${i * 70}ms`;
-    block.innerHTML = `<span class="name"></span><span class="time"></span>`;
-    block.querySelector(".name").textContent = p.job.name;
-    block.querySelector(".time").textContent = `${toClock(p.start)}–${toClock(p.end)}`;
-    if (p.onBackup.length) block.querySelector(".name").textContent += ` (on backup ${p.onBackup.map((b) => `${toClock(b.start)}–${toClock(b.end)}`).join(", ")})`;
-    block.title = `${p.job.name}, ${toClock(p.start)} to ${toClock(p.end)}`;
-    track.append(block);
-  });
-  els.timeline.append(hours, track);
-
-  els.planFoot.hidden = false;
-  els.misses.innerHTML = "";
-  const h3 = document.createElement("h3");
-  h3.textContent = "Didn't fit";
-  els.misses.append(h3);
-  if (!result.unplaced.length && !result.skipped.length) {
-    const ok = document.createElement("p");
-    ok.className = "ok";
-    ok.textContent = "Everything fits today.";
-    els.misses.append(ok);
-  } else {
-    const ul = document.createElement("ul");
-    for (const u of [...result.unplaced, ...result.skipped]) {
-      const li = document.createElement("li");
-      const strong = document.createElement("strong");
-      strong.textContent = u.job.name || "Unnamed job";
-      li.append(strong, document.createTextNode(nb(u.reason)));
-      ul.append(li);
-    }
-    els.misses.append(ul);
+  drawPlan(!first);
+  if (scroll && window.matchMedia("(max-width: 979px)").matches) {
+    $("plan-card").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
   }
 }
 
-function band(kind, span, y) {
-  const b = document.createElement("div");
-  b.className = `band ${kind}`;
-  b.style.top = `${y(span.start)}px`;
-  b.style.height = `${y(span.end) - y(span.start)}px`;
-  return b;
+function drawPlan(announce = false, animate = true) {
+  const plan = state.plan;
+  if (!plan) return;
+  $("plan-empty").hidden = true;
+  $("plan-body").hidden = false;
+  $("plan-area").textContent = `Your day in ${state.planArea}`;
+  const showNow = state.day === "today";
+  const minute = nowMinutes();
+  const now = $("now-card");
+  now.hidden = !showNow;
+  if (showNow) renderNow(now, plan, nowStatus(plan, minute), { clockSet: clockOverride });
+  renderChart($("chart"), plan, { now: showNow ? minute : null, animate });
+  renderMisses($("misses"), plan, { onTryBackup: () => setBackup(60) });
+  $("plan-text").hidden = true;
+  if (announce) {
+    const missed = plan.unplaced.length + plan.skipped.length;
+    $("plan-live").textContent = `Plan updated: ${plan.placed.length} job${plan.placed.length === 1 ? "" : "s"} placed${missed ? `, ${missed} didn't fit` : ""}.`;
+  }
 }
 
-// Keep "2 h" and "30 min" together when a line wraps.
-function nb(s) { return s.replace(/(\d) (h|min)/g, "$1\u00a0$2"); }
+// Once there is a plan, it follows every change.
+function changed() { if (state.plan) planNow(); }
 
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
-}
+setInterval(() => { if (state.plan && state.day === "today" && !clockOverride) drawPlan(false, false); }, 30000);
 
-// ---- Wiring ----
-els.useSample.addEventListener("click", () => {
-  els.notice.value = SAMPLE_NOTICE;
-  setNote("Sample notice added. The areas and times in it are fictional. Press Read the notice.");
-  els.read.focus();
+$("plan").addEventListener("click", () => planNow({ scroll: true }));
+
+// ---- The notice ----
+$("use-sample").addEventListener("click", () => {
+  $("notice").value = SAMPLE_NOTICE;
+  setNote("Sample text added. The areas and times in it are fictional. Press Read the notice.");
+  $("read").focus();
 });
-els.read.addEventListener("click", readNotice);
-els.area.addEventListener("change", () => { showOffLine(); if (state.lastPlan) plan(); });
-els.plan.addEventListener("click", plan);
-$("backup").addEventListener("change", () => { if (state.lastPlan) plan(); });
-// Redraw only when the hour height changes (phone vs laptop), so blocks don't re-animate on every resize.
-let drawnPx = 0;
-window.addEventListener("resize", () => {
-  if (state.lastPlan && hourPx() !== drawnPx) draw(state.lastPlan, state.lastArea);
+$("read").addEventListener("click", readText);
+
+// ---- Photo reading is added in slice 3: until the server says it can, the tab explains itself ----
+function showPhotoAvailability() {
+  const off = !state.vision;
+  $("photo-choose").disabled = off;
+  $("photo-sample").disabled = off;
+  const p = document.querySelector("#panel-photo .privacy");
+  p.textContent = off
+    ? "Photo reading needs the AI reader, which is switched off in this copy. Use the Text tab: it works with no setup."
+    : "The photo goes to the AI reader to be read. It is not stored.";
+}
+
+// ---- The sample day in one tap ----
+function loadSampleDay() {
+  setTab("text");
+  $("notice").value = SAMPLE_NOTICE;
+  state.areas = rulesRead(SAMPLE_NOTICE);
+  setNote("The areas and times in it are fictional.", { tag: "Sample day" });
+  fillAreas();
+  selectArea(SAMPLE_AREA, false);
+  editor.setJobs(SAMPLE_JOBS);
+  planNow({ scroll: true });
+}
+$("hero-sample").addEventListener("click", loadSampleDay);
+$("hero-photo").addEventListener("click", () => {
+  setTab("photo");
+  $("notice-card").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
+  ($("photo-choose").disabled ? $("tab-text") : $("photo-choose")).focus({ preventScroll: true });
 });
 
+// ---- The hero's example day ----
+(function drawExample() {
+  const sample = rulesRead(SAMPLE_NOTICE).find((a) => a.name === SAMPLE_AREA);
+  const plan = planDay({ outages: sample.off, jobs: SAMPLE_JOBS, backupMinutes: 60 });
+  renderChart($("hero-chart"), plan, { compact: true });
+})();
+
+// ---- Status ----
 async function showStatus() {
   try {
     const res = await fetch("/api/status");
-    const { ai } = await res.json();
-    state.ai = ai;
-    setNote(ai ? "AI reader on: loose wording like \u201cfrom 4 in the afternoon\u201d is understood."
-               : "AI reader off: built-in rules read times like 05:00\u201309:00.");
-  } catch { /* the note stays empty */ }
+    const s = await res.json();
+    state.ai = Boolean(s.ai);
+    state.vision = Boolean(s.vision);
+  } catch { /* keep the defaults */ }
+  const pill = $("ai-pill");
+  pill.textContent = state.ai ? "AI reader on" : "Built-in rules only";
+  pill.classList.toggle("on", state.ai);
+  pill.classList.toggle("soft", !state.ai);
+  showPhotoAvailability();
 }
 
-wireCopy($("copy"), $("copied"), $("plan-text"), () => (state.lastPlan ? planToText(state.lastPlan, state.lastArea) : ""));
+// ---- Wiring the rest ----
+wireCopy($("copy"), $("copied"), $("plan-text"), () => (state.plan ? planToText(state.plan, state.planArea, dayLabel(state.day === "today" ? 0 : 1)) : ""));
+setBackup(0, false);
+setDay("today", false);
+setTab("photo");
+showPhotoAvailability();
 showStatus();

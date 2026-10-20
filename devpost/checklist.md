@@ -21,7 +21,7 @@ Version 2 of OnHours. Version 1's three slices (a pasted notice becomes a day pl
   Learner check: Open the page, use the sample notice, choose Riverside East, plan, then set the backup to 1 hour and see the beans move from Didn't fit into the day.
   Commit: `Carry a job across an outage on backup power`
 
-- [ ] **2. A phone-first redesign with the day ribbon, Right now and plain-words jobs**
+- [x] **2. A phone-first redesign with the day ribbon, Right now and plain-words jobs**
   Becomes usable: The whole flow looks and works like a finished app at 390 px and 1280 px: an opening that shows an example day, the notice, area and backup, jobs, and the plan with a day ribbon, a timeline, a Right now card and honest empty, loading and error states. Jobs can be typed in plain words.
   Why now: Design decides ties and the video is built from this screen, so the look is settled before the remaining features add to it.
   PRD ref: `prd.md > The Core Journey`, `prd.md > Screens and Layout`, `prd.md > Look and Feel`, `prd.md > Right now`, `prd.md > The jobs list`, `prd.md > States and Boundaries`
@@ -63,7 +63,7 @@ Version 2 of OnHours. Version 1's three slices (a pasted notice becomes a day pl
 
 ## Hands-on Checkpoints
 
-- [ ] Early usable behavior explored — after slice 2, the sample day at 1280 and 390 px
+- [x] Early usable behavior explored — after slice 2, the sample day at 1280 and 390 px. Headless pass by the build session: first visit and the planned sample day at both widths, a keyboard-only tab pass (46 stops, every control reachable and focus-visible), no console errors, no horizontal overflow, light background. Feedback acted on: the clock marker crossed the job names, so it now sits inside each track and on the hour axis; class names `job` and `backup` collided between the cards and the legend swatches, so the swatches were renamed; the plan placeholder showed beside the plan until `[hidden]` was made absolute.
 - [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review

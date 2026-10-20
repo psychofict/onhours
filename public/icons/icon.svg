@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="OnHours">
+  <rect width="512" height="512" rx="116" fill="#F7F1E8"/>
+  <circle cx="256" cy="212" r="140" fill="#FBF0CF"/>
+  <circle cx="256" cy="212" r="92" fill="#E5B54F"/>
+  <rect x="84" y="372" width="344" height="44" rx="22" fill="#FBF0CF"/>
+  <rect x="84" y="372" width="108" height="44" rx="22" fill="#D9D2C4"/>
+  <rect x="318" y="372" width="110" height="44" rx="22" fill="#D9D2C4"/>
+  <rect x="214" y="380" width="118" height="28" rx="14" fill="#E5B54F"/>
+</svg>

@@ -2,115 +2,222 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#F7F1E8">
   <title>OnHours · Plan your day around the power cuts</title>
-  <meta name="description" content="Paste the power-cut notice, list the jobs that need electricity, and get a day plan that fits every job into the hours the power is on.">
+  <meta name="description" content="Photograph or paste your power-cut notice. OnHours fits every job that needs electricity into the hours the power is on, and keeps working when it is off.">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icons/icon-180.png">
   <link rel="preload" href="/fonts/Newsreader-DisplayLight.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="preload" href="/fonts/Inter-Regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="/fonts/Geist-400.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="/styles.css">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='%23F5C04A'/%3E%3C/svg%3E">
 </head>
 <body>
-  <header class="masthead">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.5h3l1.6-2.5h6.8L17 8.5h3a1 1 0 0 1 1 1V18a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5a1 1 0 0 1 1-1Z"/><circle cx="12" cy="13.5" r="3.6"/></symbol>
+      <symbol id="i-text" viewBox="0 0 24 24"><path d="M5 6.5h14M5 11h14M5 15.5h9"/></symbol>
+      <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+      <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h13M13 6.5 18.5 12 13 17.5"/></symbol>
+      <symbol id="i-image" viewBox="0 0 24 24"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.6"/><path d="m4 17 5-4.5 3.5 3L15.5 13l4.5 4"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3.5v3M16 3.5v3"/></symbol>
+      <symbol id="i-copy" viewBox="0 0 24 24"><rect x="8.5" y="8.5" width="11" height="11" rx="2.2"/><path d="M15.5 8.5V6.7a2.2 2.2 0 0 0-2.2-2.2H6.7a2.2 2.2 0 0 0-2.2 2.2v6.6a2.2 2.2 0 0 0 2.2 2.2h1.8"/></symbol>
+      <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3.5 6 13.5h5l-1 7 7-10h-5l1-7Z"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="m5.5 12.5 4.2 4.2 8.8-9.4"/></symbol>
+    </defs>
+  </svg>
+
+  <a class="skip" href="#main">Skip to the planner</a>
+
+  <header class="wrap masthead">
     <a class="wordmark" href="/" aria-label="OnHours home"><span class="sun" aria-hidden="true"></span>OnHours</a>
-    <p class="masthead-note">A day planner for places with scheduled power cuts</p>
+    <div class="pills" aria-live="polite">
+      <span class="pill" id="net-pill" hidden>Offline: your plan is saved on this device</span>
+      <span class="pill soft" id="ai-pill">Checking the AI reader…</span>
+    </div>
   </header>
 
-  <main>
-    <section class="hero">
-      <p class="eyebrow">Your day, around the outage</p>
-      <h1>Plan your day around the <em>power cuts</em>.</h1>
-      <p class="lede">Paste the notice you were sent. OnHours fits every job that needs electricity into an unbroken stretch of the hours the power is on, and tells you plainly what will not fit.</p>
+  <main id="main" class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow-pill">For places with scheduled power cuts</p>
+        <h1 id="hero-title">Plan your day around the <em>power cuts</em>.</h1>
+        <p class="lede">Photograph the notice from your group chat. OnHours puts every job that needs electricity into the hours the power is on, and keeps working when it isn't.</p>
+        <div class="hero-actions">
+          <button type="button" class="btn primary" id="hero-photo">Photograph the notice <span class="arrow" aria-hidden="true"><svg class="ico"><use href="#i-arrow"/></svg></span></button>
+          <button type="button" class="btn secondary" id="hero-sample">Try the sample day</button>
+        </div>
+      </div>
+      <figure class="hero-example shell" aria-label="An example day">
+        <div class="card">
+          <figcaption class="example-head">
+            <span class="eyebrow">Example day</span>
+            <span class="example-where">Riverside East · 1 h of backup</span>
+          </figcaption>
+          <div id="hero-chart"></div>
+        </div>
+      </figure>
     </section>
 
     <div class="layout">
-      <section class="inputs" aria-label="Your notice and jobs">
-        <article class="card" id="notice-card">
-          <header class="card-head">
-            <span class="step">1</span>
-            <div>
-              <h2>The notice</h2>
-              <p class="hint">Paste the outage schedule exactly as it arrived.</p>
-            </div>
-          </header>
-          <label class="sr-only" for="notice">Outage notice</label>
-          <textarea id="notice" rows="9" maxlength="8000" spellcheck="false" placeholder="Group 2 – Riverside East: 05:00-09:00 / 13:00-15:00 …"></textarea>
-          <div class="row">
-            <button type="button" class="btn ghost" id="use-sample">Use the sample notice</button>
-            <button type="button" class="btn primary" id="read">Read the notice</button>
-          </div>
-          <p class="reader-note" id="reader-note" role="status" aria-live="polite"></p>
-        </article>
+      <div class="steps">
+        <section class="shell" aria-labelledby="notice-title" id="notice-card">
+          <div class="card">
+            <header class="card-head">
+              <p class="eyebrow">Step 1</p>
+              <h2 id="notice-title">The notice</h2>
+              <p class="hint">Photograph it, or paste what you were sent.</p>
+            </header>
 
-        <article class="card" id="area-card">
-          <header class="card-head">
-            <span class="step">2</span>
-            <div>
-              <h2>Your area</h2>
+            <div class="tabs" role="tablist" aria-label="How to give the notice">
+              <button type="button" role="tab" id="tab-photo" aria-selected="true" aria-controls="panel-photo"><svg class="ico" aria-hidden="true"><use href="#i-camera"/></svg>Photo</button>
+              <button type="button" role="tab" id="tab-text" aria-selected="false" aria-controls="panel-text" tabindex="-1"><svg class="ico" aria-hidden="true"><use href="#i-text"/></svg>Text</button>
+            </div>
+
+            <div role="tabpanel" id="panel-photo" aria-labelledby="tab-photo">
+              <input type="file" id="photo-input" accept="image/*" hidden>
+              <button type="button" class="drop" id="photo-choose">
+                <svg class="ico big" aria-hidden="true"><use href="#i-camera"/></svg>
+                <span class="drop-title">Take or choose a photo of the notice</span>
+                <span class="drop-sub">From your camera or from the chat. Reading takes a few seconds.</span>
+              </button>
+              <figure class="preview" id="photo-preview" hidden>
+                <img id="photo-img" alt="The notice you chose">
+                <span class="scan" aria-hidden="true"></span>
+              </figure>
+              <div class="row">
+                <button type="button" class="btn ghost small" id="photo-sample"><svg class="ico" aria-hidden="true"><use href="#i-image"/></svg>Use the sample photo</button>
+              </div>
+              <p class="privacy">The photo goes to the AI reader to be read. It is not stored.</p>
+            </div>
+
+            <div role="tabpanel" id="panel-text" aria-labelledby="tab-text" hidden>
+              <label class="sr-only" for="notice">Outage notice</label>
+              <textarea id="notice" rows="8" maxlength="8000" spellcheck="false" placeholder="Group 2 – Riverside East: 05:00-09:00 / 13:00-15:00 …"></textarea>
+              <div class="row">
+                <button type="button" class="btn ghost small" id="use-sample">Use the sample text</button>
+                <button type="button" class="btn secondary small" id="read">Read the notice</button>
+              </div>
+            </div>
+
+            <p class="reader-note" id="reader-note" role="status" aria-live="polite"></p>
+          </div>
+        </section>
+
+        <section class="shell" aria-labelledby="area-title" id="area-card">
+          <div class="card">
+            <header class="card-head">
+              <p class="eyebrow">Step 2</p>
+              <h2 id="area-title">Your area</h2>
               <p class="hint" id="area-hint">Read the notice to see the areas it names.</p>
+            </header>
+            <fieldset class="chips" id="areas" aria-describedby="area-hint">
+              <legend class="sr-only">Areas in the notice</legend>
+              <p class="chips-empty" id="areas-empty">No areas yet.</p>
+            </fieldset>
+            <div class="off-block" id="off-block" hidden>
+              <p class="off-line" id="off-line"></p>
+              <div id="area-chart" class="mini"></div>
             </div>
-          </header>
-          <label class="sr-only" for="area">Area</label>
-          <select id="area" disabled>
-            <option value="">No areas yet</option>
-          </select>
-          <p class="off-line" id="off-line"></p>
-          <label class="backup-line" for="backup">Backup power: hours your battery or inverter runs in a day
-            <input id="backup" type="number" min="0" max="12" step="0.5" value="0" inputmode="decimal">
-          </label>
-        </article>
 
-        <article class="card" id="jobs-card">
-          <header class="card-head">
-            <span class="step">3</span>
-            <div>
-              <h2>Jobs that need power</h2>
+            <div class="backup-box" role="group" aria-labelledby="backup-title">
+              <div class="backup-text">
+                <h3 id="backup-title">Backup power</h3>
+                <p class="hint" id="backup-help">How long can your battery or inverter run in a day? It starts the day full.</p>
+              </div>
+              <div class="stepper">
+                <button type="button" class="round" id="backup-minus" aria-label="Less backup"><svg class="ico" aria-hidden="true"><use href="#i-minus"/></svg></button>
+                <output id="backup-value" for="backup-minus backup-plus" aria-live="polite">None</output>
+                <button type="button" class="round" id="backup-plus" aria-label="More backup"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="shell" aria-labelledby="jobs-title" id="jobs-card">
+          <div class="card">
+            <header class="card-head">
+              <p class="eyebrow">Step 3</p>
+              <h2 id="jobs-title">Jobs that need power</h2>
               <p class="hint">How long each needs in one go, and whether it must happen today.</p>
+            </header>
+            <form class="words" id="words-form" autocomplete="off">
+              <label class="sr-only" for="words">Type jobs in plain words</label>
+              <input id="words" type="text" maxlength="300" placeholder="iron 45 min, pump 1 h, charge phones 2 hours">
+              <button type="submit" class="btn secondary small" id="words-add">Add</button>
+            </form>
+            <p class="words-note" id="words-note" role="status" aria-live="polite"></p>
+            <ol class="jobs" id="jobs"></ol>
+            <button type="button" class="btn ghost small" id="add-job"><svg class="ico" aria-hidden="true"><use href="#i-plus"/></svg>Add a job</button>
+          </div>
+        </section>
+
+        <button type="button" class="btn primary large" id="plan">Plan my day <span class="arrow" aria-hidden="true"><svg class="ico"><use href="#i-arrow"/></svg></span></button>
+        <p class="reader-note" id="plan-note" role="status" aria-live="polite"></p>
+      </div>
+
+      <section class="plan shell" aria-labelledby="plan-title" id="plan-card">
+        <div class="card">
+          <header class="plan-head">
+            <div>
+              <p class="eyebrow" id="plan-area">Your day</p>
+              <h2 class="plan-title" id="plan-title">Today</h2>
+              <p class="plan-date" id="plan-date"></p>
+            </div>
+            <div class="seg" role="radiogroup" aria-label="Plan for">
+              <button type="button" role="radio" aria-checked="true" id="day-today">Today</button>
+              <button type="button" role="radio" aria-checked="false" id="day-tomorrow">Tomorrow</button>
             </div>
           </header>
-          <ol class="jobs" id="jobs"></ol>
-          <button type="button" class="btn ghost small" id="add-job">Add a job</button>
-        </article>
 
-        <button type="button" class="btn primary large" id="plan">Plan my day</button>
-      </section>
-
-      <section class="plan card" aria-label="Your day" id="plan-card">
-        <header class="plan-head">
-          <div>
-            <p class="eyebrow" id="plan-area">Your day</p>
-            <h2 class="plan-title">05:00 to 23:00</h2>
+          <div class="empty" id="plan-empty">
+            <svg class="ico big" aria-hidden="true"><use href="#i-bolt"/></svg>
+            <p>Your plan appears here: the hours with power, each job placed in a stretch long enough for it, and anything that will not fit today.</p>
           </div>
-          <ul class="legend" aria-label="Legend">
-            <li><span class="swatch on"></span>Power on</li>
-            <li><span class="swatch off"></span>Power off</li>
-          </ul>
-        </header>
 
-        <div class="empty" id="plan-empty">
-          <p>Your plan appears here: the hours with power, each job placed in a stretch long enough for it, and anything that will not fit today.</p>
-        </div>
-
-        <div class="timeline" id="timeline" hidden></div>
-
-        <div class="plan-foot" id="plan-foot" hidden>
-          <div class="misses" id="misses"></div>
-          <div class="share">
-            <button type="button" class="btn primary" id="copy">Copy plan</button>
-            <span class="copied" id="copied" role="status" aria-live="polite"></span>
+          <div id="plan-body" hidden>
+            <p class="sr-only" id="plan-live" role="status" aria-live="polite"></p>
+            <div class="now" id="now-card"></div>
+            <div id="chart"></div>
+            <div class="misses" id="misses"></div>
+            <div class="share">
+              <button type="button" class="btn secondary" id="btn-picture" hidden><svg class="ico" aria-hidden="true"><use href="#i-image"/></svg>Plan picture</button>
+              <button type="button" class="btn secondary" id="btn-ics" hidden><svg class="ico" aria-hidden="true"><use href="#i-calendar"/></svg>Add to calendar</button>
+              <button type="button" class="btn secondary" id="copy"><svg class="ico" aria-hidden="true"><use href="#i-copy"/></svg>Copy plan</button>
+            </div>
+            <p class="copied" id="copied" role="status" aria-live="polite"></p>
+            <label class="sr-only" for="plan-text">Plan as text</label>
+            <textarea id="plan-text" class="plan-text" rows="8" readonly hidden></textarea>
           </div>
-          <label class="sr-only" for="plan-text">Plan as text</label>
-          <textarea id="plan-text" class="plan-text" rows="8" readonly hidden></textarea>
         </div>
       </section>
     </div>
   </main>
 
-  <footer class="colophon">
-    <p>OnHours is a proof of concept. The sample notice, areas and jobs are fictional. Nothing you type is stored.</p>
+  <footer class="wrap colophon">
+    <p>OnHours is a proof of concept for Devpost's Build With AI: Basics. The sample notice, areas and jobs are fictional. Your jobs, area and last notice are saved in this browser only; nothing is sent anywhere except a photo you choose, which goes to the AI reader to be read and is not kept.</p>
+    <p><button type="button" class="link" id="forget">Forget this device</button> <span id="forget-note" role="status" aria-live="polite"></span></p>
   </footer>
 
+  <dialog id="card-dialog" aria-labelledby="card-title">
+    <form method="dialog" class="dialog-in">
+      <header class="dialog-head">
+        <h2 id="card-title">Plan picture</h2>
+        <button class="round" value="close" aria-label="Close"><svg class="ico" aria-hidden="true"><use href="#i-close"/></svg></button>
+      </header>
+      <canvas id="card-canvas" width="1080" height="1350" role="img" aria-label="The plan as a picture"></canvas>
+      <div class="dialog-actions">
+        <button type="button" class="btn primary" id="card-share">Share</button>
+        <button type="button" class="btn secondary" id="card-download">Download</button>
+      </div>
+    </form>
+  </dialog>
+
+  <noscript><p class="wrap">OnHours needs JavaScript to read notices and plan your day.</p></noscript>
   <script type="module" src="/app.js"></script>
 </body>
 </html>

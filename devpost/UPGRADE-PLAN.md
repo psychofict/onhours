@@ -27,7 +27,7 @@ These apps tell you when the power is off. In the searches done for this plan, n
 
 ## Design reference
 
-Oura (`~/.claude/design-md/design-md/oura/DESIGN.md`), taken as a whole system and kept in light surfaces only. A warm paper canvas (`#F7F1E8`) with white cards and hairline dividers. A light, high-contrast serif for the large statements (Newsreader, already shipped) and a quiet grotesque for everything read (Geist, SIL Open Font License, replacing Inter). An earth-tone family for data: the mustard ramp for powered time, the olive and sage ramp for backup power. One decisive action colour on buttons, the action blue `#2A72DE`, so yellow means only "power is on" and blue means "press this". Full pill buttons, 24 px card radius, nothing dark and filled. The family is Editorial Luxury.
+Oura (its published design language, as captured in a local design reference library), taken as a whole system and kept in light surfaces only. A warm paper canvas (`#F7F1E8`) with white cards and hairline dividers. A light, high-contrast serif for the large statements (Newsreader, already shipped) and a quiet grotesque for everything read (Geist, SIL Open Font License, replacing Inter). An earth-tone family for data: the mustard ramp for powered time, the olive and sage ramp for backup power. One decisive action colour on buttons, the action blue `#2A72DE`, so yellow means only "power is on" and blue means "press this". Full pill buttons, 24 px card radius, nothing dark and filled. The family is Editorial Luxury.
 
 ## Upgrades chosen
 
