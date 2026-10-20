@@ -1,0 +1,45 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who OnHours is for (drawn for the video; the people are made up)</title>
+<link rel="stylesheet" href="/base.css">
+<style>
+  html, body { width: 1280px; height: 720px; overflow: hidden; background: var(--canvas); background-image: radial-gradient(120% 70% at 85% -10%, #FBE9BB 0%, rgba(251,233,187,0) 55%); }
+  .wrap { position: absolute; inset: 0; padding: 64px 80px; animation: drift 22s ease-in-out both; transform-origin: 30% 40%; }
+  @keyframes drift { from { transform: scale(1); } to { transform: scale(1.03); } }
+  .eyebrow { font-size: 14px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ash); animation: rise .8s var(--ease) .1s both; }
+  h1 { margin: 12px 0 0; font: 300 66px/1.04 "Newsreader", Georgia, serif; letter-spacing: -.025em; max-width: 1000px; animation: rise .9s var(--ease) .2s both; }
+  h1 em { font-style: italic; font-weight: 400; background: linear-gradient(transparent 64%, var(--band) 64% 92%, transparent 92%); }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 40px; }
+  .shell { background: rgba(28,27,26,.045); border: 1px solid rgba(28,27,26,.06); border-radius: 32px; padding: 6px; }
+  .shell:nth-child(1) { animation: dim .9s var(--ease) 1.8s both, lit .7s var(--ease) 8.1s forwards } .shell:nth-child(2) { animation: dim .9s var(--ease) 2.0s both, lit .7s var(--ease) 9.2s forwards } .shell:nth-child(3) { animation: dim .9s var(--ease) 2.2s both, lit .7s var(--ease) 10.0s forwards }
+  .card { background: #fff; border-radius: 26px; padding: 26px 26px 24px; box-shadow: inset 0 1px 0 #fff, 0 22px 40px -30px rgba(80,52,8,.35); min-height: 330px; }
+  .who { font: 400 36px/1.1 "Newsreader", Georgia, serif; margin: 0 0 4px; }
+  .where { color: var(--ash); font-size: 17px; margin: 0 0 22px; }
+  .job { font-size: 18px; font-weight: 600; display: flex; justify-content: space-between; margin-top: 14px; }
+  .job span { color: var(--stone); font-weight: 500; }
+  .track { position: relative; height: 20px; border-radius: 9px; overflow: hidden; background: var(--tint); box-shadow: inset 0 0 0 1px rgba(175,117,27,.18); margin-top: 6px; }
+  .track i { position: absolute; top: 0; bottom: 0; background: repeating-linear-gradient(135deg, var(--off) 0 4px, var(--stripe) 4px 6px); }
+  .track b { position: absolute; top: 3px; bottom: 3px; border-radius: 999px; background: var(--job); }
+  .line { margin-top: 26px; font-size: 17px; color: var(--stone); }
+  @keyframes dim { from { opacity: 0; transform: translateY(14px); } to { opacity: .42; transform: none; } }
+  @keyframes lit { from { opacity: .42; transform: none; } to { opacity: 1; transform: translateY(-8px); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+</style></head><body>
+<div class="wrap">
+  <div class="eyebrow">Who it is for</div>
+  <h1>People who run a home or a small business <em>around the grid</em>.</h1>
+  <div class="cards">
+    <div class="shell"><div class="card"><p class="who">The tailor</p><p class="where">A sewing order due on Friday</p>
+      <div class="job">Sewing machine <span>3 h</span></div><div class="track"><i style="left:0;width:22%"></i><i style="left:50%;width:11%"></i><i style="left:78%;width:22%"></i><b style="left:23%;width:16.5%"></b></div>
+      <div class="job">Iron <span>45 min</span></div><div class="track"><i style="left:0;width:22%"></i><i style="left:50%;width:11%"></i><i style="left:78%;width:22%"></i><b style="left:62%;width:4%"></b></div>
+      <p class="line">One unbroken stretch, so the order is not stopped halfway.</p></div></div>
+    <div class="shell"><div class="card"><p class="who">The baker</p><p class="where">Bread for the market stall</p>
+      <div class="job">Oven <span>1 h 30</span></div><div class="track"><i style="left:0;width:22%"></i><i style="left:50%;width:11%"></i><i style="left:78%;width:22%"></i><b style="left:63%;width:8.3%"></b></div>
+      <div class="job">Dough mixer <span>30 min</span></div><div class="track"><i style="left:0;width:22%"></i><i style="left:50%;width:11%"></i><i style="left:78%;width:22%"></i><b style="left:34%;width:2.8%"></b></div>
+      <p class="line">Bake in the stretch where the power stays on.</p></div></div>
+    <div class="shell"><div class="card"><p class="who">The family with a water pump</p><p class="where">Five people, one tank</p>
+      <div class="job">Pump <span>1 h</span></div><div class="track"><i style="left:0;width:22%"></i><i style="left:50%;width:11%"></i><i style="left:78%;width:22%"></i><b style="left:28%;width:5.6%"></b></div>
+      <div class="job">Charge phones <span>1 h</span></div><div class="track"><i style="left:0;width:22%"></i><i style="left:50%;width:11%"></i><i style="left:78%;width:22%"></i><b style="left:34%;width:5.6%"></b></div>
+      <p class="line">Water first, then everything else that plugs in.</p></div></div>
+  </div>
+</div>
+</body></html>

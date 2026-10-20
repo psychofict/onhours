@@ -96,7 +96,7 @@ Carried from `scope.md > Inspiration & Identity`. Warm paper page (`#F7F1E8`), w
 
 ## States and Boundaries
 - **First visit** — the example day, the three ways in, the sample jobs listed, and the plan area explaining what will appear.
-- **Reading** — the photo shows with a moving highlight and the buttons are paused; the page announces "Reading the notice".
+- **Reading** — the photo shows with a moving highlight and the buttons are paused; the page announces "Reading the photo…" or, for text, "Reading the notice…".
 - **Nothing found** — "No outage times found. Check the notice has times like 05:00–09:00." and the text is kept.
 - **AI unavailable** — the rules take over for text, and the note says so. A photo says it needs the AI reader.
 - **No outages for the area** — the whole day is powered; the plan still runs.

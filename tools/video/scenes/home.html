@@ -1,0 +1,37 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A phone home screen (drawn for the video)</title>
+<link rel="stylesheet" href="/base.css">
+<style>
+  html, body { width: 390px; height: 844px; overflow: hidden; background: linear-gradient(170deg, #F9F0DC 0%, #F1E7D3 55%, #E9DFCB 100%); }
+  .grid { position: absolute; left: 22px; right: 22px; top: 96px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 30px 14px; }
+  .app { display: grid; justify-items: center; gap: 7px; font-size: 12px; color: var(--stone); }
+  .app i { display: block; width: 66px; height: 66px; border-radius: 18px; background: var(--c, #E4DDCD); box-shadow: 0 8px 14px -10px rgba(60,40,10,.35); }
+  .dock { position: absolute; left: 18px; right: 18px; bottom: 28px; height: 96px; border-radius: 30px; background: rgba(255,255,255,.55); border: 1px solid rgba(255,255,255,.7); display: flex; justify-content: space-around; align-items: center; padding: 0 12px; }
+  .dock i { display: block; width: 62px; height: 62px; border-radius: 17px; background: var(--c); }
+  .oh { position: relative; animation: press .5s var(--ease) 1.9s both; }
+  .oh img { display: block; width: 66px; height: 66px; border-radius: 18px; box-shadow: 0 8px 14px -8px rgba(60,40,10,.5); }
+  .hint { position: absolute; left: 0; right: 0; bottom: 140px; text-align: center; font-size: 14px; color: var(--ash); animation: fade .6s var(--ease) .6s both; }
+  .open { position: fixed; left: 0; top: 0; width: 66px; height: 66px; border-radius: 18px; background: var(--canvas); display: grid; place-items: center; opacity: 0; transform-origin: 0 0; animation: open .75s var(--ease) 2.3s both; }
+  .open b { width: 22px; height: 22px; border-radius: 50%; background: var(--job); box-shadow: 0 0 0 7px var(--tint); }
+  @keyframes press { 50% { transform: scale(.88); } 100% { transform: scale(1); } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes open { 0% { opacity: 1; } 100% { opacity: 1; left: 0; top: 0; width: 390px; height: 844px; border-radius: 0; } }
+</style></head><body>
+<div class="grid">
+  <div class="app"><i style="--c:#E6D9BF"></i>Camera</div><div class="app"><i style="--c:#D8E0C9"></i>Notes</div><div class="app"><i style="--c:#E9D3C6"></i>Clock</div><div class="app"><i style="--c:#D5DDE6"></i>Weather</div>
+  <div class="app"><i style="--c:#EADFC4"></i>Routes</div><div class="app"><i style="--c:#DCD3E4"></i>Gallery</div><div class="app"><i style="--c:#E2E0D6"></i>Documents</div><div class="app"><i style="--c:#E4D6D0"></i>Songs</div>
+  <div class="app"><i style="--c:#D7E2DC"></i>Calendar</div><div class="app"><i style="--c:#EBE3CF"></i>Radio</div><div class="app"><i style="--c:#DFD8CA"></i>Receipts</div><div class="app"><i style="--c:#E3DAD0"></i>Recipes</div>
+  <div class="app"></div><div class="app"><div class="oh" id="oh"><img src="/app/icons/icon-192.png" alt=""></div>OnHours</div><div class="app"></div><div class="app"></div>
+</div>
+<div class="hint">Added to the home screen</div>
+<div class="dock"><i style="--c:#E6D9BF"></i><i style="--c:#D8E0C9"></i><i style="--c:#E9D3C6"></i><i style="--c:#D5DDE6"></i></div>
+<div class="open" id="open"><b></b></div>
+<script>
+  // the opening tile starts exactly over the OnHours icon
+  const r = document.getElementById("oh").getBoundingClientRect();
+  const o = document.getElementById("open");
+  o.style.left = r.left + "px"; o.style.top = r.top + "px";
+  const kf = `@keyframes open { 0% { opacity: 1; left:${r.left}px; top:${r.top}px; width:66px; height:66px; border-radius: 18px; } 100% { opacity: 1; left: 0; top: 0; width: 390px; height: 844px; border-radius: 0; } }`;
+  document.head.insertAdjacentHTML("beforeend", `<style>${kf}</style>`);
+</script>
+</body></html>

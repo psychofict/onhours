@@ -1,0 +1,71 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>OnHours gallery images (3:2, made from real screenshots)</title>
+<link rel="stylesheet" href="/base.css">
+<style>
+  html, body { width: 1800px; height: 1200px; overflow: hidden; background: var(--canvas); }
+  body { background-image: radial-gradient(70% 80% at 92% -10%, #FBE6B2 0%, rgba(251,230,178,0) 62%), radial-gradient(50% 60% at 0% 110%, #F3E8D2 0%, rgba(243,232,210,0) 70%); position: relative; }
+  .mark { position: absolute; left: 90px; top: 70px; display: flex; align-items: center; gap: 16px; font-weight: 600; font-size: 40px; }
+  .sun { width: 36px; height: 36px; border-radius: 50%; background: var(--job); box-shadow: 0 0 0 10px var(--tint); }
+  .foot { position: absolute; left: 90px; bottom: 56px; font-size: 30px; color: var(--ash); }
+  .copy { position: absolute; left: 90px; top: 230px; width: 760px; }
+  .eyebrow { font-size: 30px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--ash); }
+  h1, h2 { margin: 22px 0 0; font: 300 128px/1.0 "Newsreader", Georgia, serif; letter-spacing: -.03em; text-wrap: balance; }
+  h2 { font-size: 112px; }
+  em { font-style: italic; font-weight: 400; background: linear-gradient(transparent 64%, var(--band) 64% 92%, transparent 92%); padding: 0 .05em; }
+  p.sub { margin: 36px 0 0; font-size: 44px; line-height: 1.34; color: var(--stone); }
+  .shell { position: absolute; background: rgba(28,27,26,.045); border: 1px solid rgba(28,27,26,.06); border-radius: 56px; padding: 10px; }
+  .inner { width: 100%; height: 100%; border-radius: 46px; overflow: hidden; background: #fff; box-shadow: inset 0 1px 0 #fff, 0 40px 70px -48px rgba(80,52,8,.5); }
+  .inner img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .phone { position: absolute; width: 520px; height: 1080px; top: 60px; border-radius: 84px; background: linear-gradient(160deg, #FBF8F2 0%, #EDE6D8 100%); border: 2px solid #DDD5C5; box-shadow: 0 70px 100px -55px rgba(80,52,8,.55), inset 0 3px 0 #fff; }
+  .phone .screen { position: absolute; left: 20px; top: 66px; width: 480px; height: 962px; border-radius: 56px; overflow: hidden; background: #fff; box-shadow: 0 0 0 2px #D9D1C1; }
+  .phone .screen img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .phone .spk { position: absolute; left: 50%; top: 28px; width: 88px; height: 10px; margin-left: -44px; border-radius: 5px; background: #D8D0BF; }
+  .phone .st { position: absolute; left: 44px; right: 44px; top: 26px; display: flex; justify-content: space-between; font-weight: 600; font-size: 22px; color: var(--stone); }
+  .pill { display: inline-block; margin-top: 40px; padding: 14px 30px; border-radius: 999px; background: #fff; border: 2px solid var(--hair); font-size: 34px; font-weight: 600; color: var(--stone); }
+  .tag { position: absolute; padding: 12px 28px; border-radius: 999px; background: var(--olive-pale); border: 2px solid #C5CDAC; font-size: 34px; font-weight: 600; color: #33452F; }
+  [data-n] { display: none; } body[data-show="1"] [data-n="1"], body[data-show="2"] [data-n="2"], body[data-show="3"] [data-n="3"], body[data-show="4"] [data-n="4"], body[data-show="5"] [data-n="5"], body[data-show="6"] [data-n="6"] { display: block; }
+</style></head><body>
+<div class="mark"><span class="sun"></span>OnHours</div>
+
+<!-- 1: the cover -->
+<div data-n="1">
+  <div class="copy"><div class="eyebrow">For places with scheduled power cuts</div><h1>Plan your day around the <em>power cuts</em>.</h1><p class="sub">Photograph the notice. Every job lands in the hours the power is on. It works with no network.</p></div>
+  <div class="shell" style="left:960px;top:150px;width:760px"><div class="inner" style="height:auto"><img src="/work/gallery-src/hero-example.png" style="height:auto"></div></div>
+</div>
+
+<!-- 2: a photo in -->
+<div data-n="2">
+  <div class="copy"><div class="eyebrow">Step 1</div><h2>A photo becomes <em>areas and times</em>.</h2><p class="sub">An AI reads the notice and nothing else. You check what it read against the picture.</p></div>
+  <div class="phone" style="left:1100px"><div class="spk"></div><div class="st"><span>13:30</span><span></span></div><div class="screen"><img src="/work/gallery-src/phone-photo.png"></div></div>
+</div>
+
+<!-- 3: a plan out -->
+<div data-n="3">
+  <div class="copy"><div class="eyebrow">Step 2</div><h2>Every job gets one <em>unbroken stretch</em>.</h2><p class="sub">Must-do jobs first. Nothing starts and then loses its power halfway through.</p></div>
+  <div class="shell" style="left:1000px;top:60px;width:700px"><div class="inner" style="height:auto"><img src="/work/gallery-src/plan-card.png" style="height:auto"></div></div>
+</div>
+
+<!-- 4: a miss, with its reason, and the fix -->
+<div data-n="4">
+  <div class="copy" style="top:200px;width:1600px"><div class="eyebrow">Honest about what does not fit</div><h2 style="font-size:104px">It says why. Add the inverter and <em>it fits</em>.</h2></div>
+  <div class="shell" style="left:90px;top:600px;width:790px"><div class="inner" style="height:auto"><img src="/work/gallery-src/misses-before.png" style="height:auto"></div></div>
+  <div class="shell" style="left:920px;top:600px;width:790px"><div class="inner" style="height:auto"><img src="/work/gallery-src/beans-after.png" style="height:auto"></div></div>
+  <div class="tag" style="left:116px;top:540px;background:#FBF0CF;border-color:#F0DFA9;color:#6A4A0C">1. No backup</div>
+  <div class="tag" style="left:946px;top:540px">2. One hour of backup</div>
+</div>
+
+<!-- 5: no power, no network -->
+<div data-n="5">
+  <div class="copy"><div class="eyebrow">No power. No network.</div><h2>Still <em>there</em> when the lights go out.</h2><p class="sub">Installed on the phone. Your jobs, area and plan stay on the device.</p></div>
+  <div class="phone" style="left:1100px"><div class="spk"></div><div class="st"><span>13:30</span><span>
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#4A4741" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15.5v-1.7l-8-5V4.4a1.4 1.4 0 0 0-2.8 0v4.4l-8 5v1.7l8-2.3v4.1l-2 1.5V21l3.4-.9 3.4.9v-1.7l-2-1.5v-4.1l8 2.3Z"/></svg></span></div><div class="screen"><img src="/work/gallery-src/phone-offline.png"></div></div>
+</div>
+
+<!-- 6: into the family chat -->
+<div data-n="6">
+  <div class="copy"><div class="eyebrow">Step 3</div><h2>Into the <em>family chat</em>.</h2><p class="sub">A picture of the plan to send, and a calendar file with a reminder ten minutes before every cut.</p></div>
+  <div class="shell" style="left:1000px;top:90px;width:720px;height:960px"><div class="inner"><img src="/work/gallery-src/plan-picture.png" style="object-fit:cover"></div></div>
+</div>
+
+<div class="foot">Build With AI: Basics · open source on GitHub</div>
+<script>document.body.dataset.show = new URLSearchParams(location.search).get("n") || "1";</script>
+</body></html>

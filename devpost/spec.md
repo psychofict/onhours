@@ -55,11 +55,11 @@ Carried from `prd.md > Look and Feel`.
 ## Components
 
 ### Server (`server/index.js`)
-Serves `public/` with correct content types and `Cache-Control: no-cache`, the service worker with no caching, `GET /api/status`, and `POST /api/read-notice`. Text bodies are capped at 16 KB and 8,000 characters; image bodies at 2.5 MB. Bodies are counted as they arrive, errors never echo the input, and security headers are set on every response. Listens on `PORT` or 5174, on 127.0.0.1.
+Serves `public/` with correct content types and `Cache-Control: no-cache`, the service worker with no caching, `GET /api/status`, and `POST /api/read-notice`. Text bodies are capped at 16 KB and 8,000 characters; photo bodies at 3 MB, and the picture itself (a data URL for a JPEG, PNG or WebP) at 2.5 million characters. Bodies are counted as they arrive and a body already refused is not read further, errors never echo the input, and security headers are set on every response. Listens on `PORT` or 5174, on 127.0.0.1.
 PRD ref: `prd.md > Reading the notice`.
 
 ### Notice reader (`server/read-notice.js`)
-`readNotice(text, env)` and `readNoticeImage(dataUrl, env)`. When the model settings are present, calls the model with a system prompt that names every key of the JSON shape, `temperature: 0`, a 20-second timeout (a longer one for photos), and validates the reply (`validateAreas`). A photo is sent as an `image_url` content part. On any failure, or with no model, uses `rulesRead()`, on the transcript for a photo, and adds a note. A photo with no usable transcript returns `{ areas: [], reader: "none", error }`. The image is held in memory for the request and never written anywhere or logged.
+`readNotice(text, env)` and `readNoticeImage(dataUrl, env)`. When the model settings are present, calls the model with a system prompt that names every key of the JSON shape, `temperature: 0`, a 20-second timeout (a longer one for photos), and validates the reply (`validateAreas`). A photo is sent as an `image_url` content part, and the prompt asks for `areas` first and a short `transcript` second, in single spaces. A reply cut off inside its transcript still holds a finished `areas` array, which is taken out and checked like any other. A reply that passes the check is trusted, including "no outage times in this picture". If the areas fail the check but a transcript exists, `rulesRead()` reads the transcript and a note says so. A photo with neither returns an error. The image is held in memory for the request and never written anywhere or logged.
 PRD ref: `prd.md > Reading the notice`, `prd.md > States and Boundaries`.
 
 ### Rules reader (`public/rules.js`)
@@ -67,7 +67,7 @@ PRD ref: `prd.md > Reading the notice`, `prd.md > States and Boundaries`.
 PRD ref: `prd.md > Reading the notice`.
 
 ### Planner (`public/planner.js`)
-`planDay({ outages, jobs, backupMinutes = 0, dayStart = "05:00", dayEnd = "23:00" })`. Works in minutes from midnight. Powered stretches are the day minus merged outages. Jobs are sorted must-do first, then longer first, then list order. For each job it looks for the earliest start (on the hour grid of five minutes, or the start of a free gap) where the whole job lies in time no other job holds and touches no outage. If there is none, and the job runs on backup, it looks for the earliest such start where the outage minutes inside the job fit in the backup left, and records those minutes as `onBackup`. A job that fits nowhere goes to `unplaced` with a reason. `planToText(plan, areaName)` builds the message.
+`planDay({ outages, jobs, backupMinutes = 0, dayStart = "05:00", dayEnd = "23:00" })`. Works in minutes from midnight. Powered stretches are the day minus merged outages. Jobs are sorted must-do first, then longer first, then list order. For each job it scans minute by minute for the earliest start where the whole job lies in time no other job holds and touches no outage. If there is none, and the job runs on backup, it looks for the earliest such start where the outage minutes inside the job fit in the backup left, and records those minutes as `onBackup`. A job that fits nowhere goes to `unplaced` with a reason. `planToText(plan, areaName)` builds the message.
 PRD ref: `prd.md > Planning the day`, `prd.md > Sharing the plan`.
 
 ### Right now (`public/now.js`)
@@ -91,11 +91,11 @@ Copy plan (with the select-by-hand fallback), the plan picture dialog (canvas at
 PRD ref: `prd.md > Sharing the plan`.
 
 ### Offline layer (`public/sw.js`, `public/manifest.webmanifest`, `public/icons/`)
-`sw.js` stores the page's files when it is installed, answers requests from the store first and refreshes the store in the background, and never touches `/api/`. The manifest names the app, sets the standalone display, the paper colour and the icons.
+`sw.js` stores the page's files when it is installed, answers requests from the store first and refreshes the store in the background, and never touches `/api/`. Every file the page loads must be in its list; `test/sw.test.js` fails when one is missing. The manifest names the app, sets the standalone display, the paper colour and the icons.
 PRD ref: `prd.md > Works with no power and no network`.
 
 ## Data Model
-In the page's memory, with the household also saved in `localStorage` under `onhours.v2`.
+In the page's memory, with the household also saved in `localStorage` under `onhours.v2` and the last AI status (`ai`, `vision`) under `onhours.status`.
 - Area: `{ name: string, off: [{ start: "HH:MM", end: "HH:MM" }] }`.
 - Job: `{ id, name, minutes, must: boolean, backup: boolean }`.
 - Household: `{ v: 2, notice: string, areas: Area[], area: string, backupMinutes: number, day: "today" | "tomorrow", jobs: Job[] }`. The service worker's store holds only the page's own files.
@@ -130,8 +130,8 @@ onhours/
 │   ├── manifest.webmanifest
 │   ├── icons/
 │   └── fonts/           # Newsreader, Geist and their licences
-├── test/                # planner, rules, read-notice, jobtext, now, ics, store, server
-├── tools/               # how the sample photo and the icons were made
+├── test/                # planner, rules, read-notice, read-photo, jobtext, now, ics, store, sw, server
+├── tools/               # how the sample photo, the icons, the gallery images and the demo video are made
 ├── devpost/             # scope, PRD, spec, checklist, upgrade plan, app map
 ├── submission/          # video, captions, script, gallery, Devpost text, checks
 ├── .env.example         # the model settings, no values
@@ -148,6 +148,7 @@ onhours/
 - **Model slow, down or returns bad JSON for text** → the rules answer and the note says "The AI reader was unavailable, so the built-in rules read it."
 - **Model cannot read a photo** → the rules read its transcript if there is one; otherwise "I couldn't read that photo. Try again, or paste the text."
 - **No network** → the page opens from the service worker, reads text with the rules, and pauses photo reading with a plain note.
+- **Server not reachable** → the page treats it as offline (the browser's own online flag is not always set), remembers the last AI status it saw, and keeps working from its saved files.
 - **Browser storage blocked or full** → the page works for this visit and says "This browser won't save your household."
 - **Clipboard or share blocked** → the plan text is shown selected, or the picture is offered as a download.
 

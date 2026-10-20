@@ -1,6 +1,6 @@
-# Devpost submission draft: OnHours
+# Devpost submission text: OnHours
 
-Text for the Build With AI: Basics submission form.
+Text for the Build With AI: Basics submission form. Draft for a person to review and paste; nothing here has been sent. The fields follow the form. The lines marked "to fill" need a link that only exists after the video is uploaded.
 
 ## Project name
 
@@ -8,57 +8,80 @@ OnHours
 
 ## Elevator pitch
 
-Paste the power-cut notice from your group chat. OnHours fits every job that needs electricity into an unbroken stretch of powered hours, and says plainly what won't fit.
+Photograph your power-cut notice. OnHours fits every job that needs electricity into the hours the power is on, says why anything won't fit, and keeps working with no network.
 
 ## About the project
 
 ### Inspiration
 
-In many cities power cuts are scheduled, and the timetable reaches people as a forwarded message in a street or family group chat. Everyone then does the same sum in their head: when is my area off, and how do I fit the water pump, the iron, the sewing machine and the phone chargers around it? The jobs that go wrong are the ones started too late, when the power drops halfway through.
+In many cities power cuts are scheduled, and the timetable reaches people as a picture in a street or family group chat. Everyone then does the same sum in their head: when is my area off, and how do I fit the water pump, the iron, the sewing machine and the phone chargers around it? The jobs that go wrong are the ones started too late, when the power drops halfway through. Supply is uneven, so these notices keep coming: on 2 October 2026 Ikeja Electric in Lagos told customers that five of its Band A feeders had missed their 20-hour daily minimum on 30 September and 1 October.
+
+The schedule apps we found tell you when the power goes off. We did not find one that takes your own list of jobs and places each in a stretch long enough for it, or one that reads the picture you were actually sent. (That is a statement about our searches in October 2026, not proof that none exists.)
 
 Ebenworks is an AI product company for the people who keep the world running: the shop owner, the nurse, the family carer, the contractor, the organiser and the artist. OnHours is a small test of that idea for the person running a household or a home workshop around the grid.
 
 ### What it does
 
-1. Paste the notice exactly as it arrived, loose wording and all.
-2. OnHours reads every area and its outage times. "Off from 4 in the afternoon until 8pm" becomes 16:00–20:00.
-3. Choose your area and check its times against the notice.
-4. List the jobs that need power: how long each needs in one go, and whether it must happen today.
-5. Press Plan my day. Each job goes into the earliest powered stretch that can hold the whole job, must-do jobs first, and nothing crosses an outage.
-6. A job that can't fit says why ("Needs 5 h 30 min in one go; the longest powered stretch left is 2 h 15 min").
-7. Copy the plan as a message for the family chat.
+1. **Reads the notice.** Take a photo of it, or paste its text. An AI model that can see pictures reads every area and its outage times. Built-in rules read pasted text, on the phone too.
+2. **Plans the day.** Choose your area, say how many hours your battery or inverter runs, and list the jobs: how long each needs in one go, which must happen today, which can run on backup. Type them in plain words if you like ("iron 45 min, pump 1 h").
+3. **Shows the day.** Every job is a bar inside the hours the power is on. A Right now card says whether the power is on or off, what is running and what comes next.
+4. **Says why a job does not fit.** "Needs 5 h in one go; the longest powered stretch left is 4 h 15 min." A job that can run on backup may cross a cut, and the plan says when to switch: on backup from 20:00 to 20:45.
+5. **Works with no power and no network.** After one visit it opens offline and installs on the home screen. Your jobs, area and last notice stay in the browser, on that device.
+6. **Shares the plan.** As a picture for the family chat, as a calendar file with a reminder ten minutes before every job and cut, or as text.
+
+### Who it is for
+
+Households and home workshops in places with scheduled power cuts: the tailor with an order due, the baker with an oven, the family with a water pump. The notice always arrives as a message, never as a plan.
 
 ### How we built it
 
-Planning came first, with the Devpost Learn skill pack: scope, product requirements and a technical spec (all in the repository's `devpost/` folder), then a build checklist of three working slices, each tested and committed before the next.
+Plan first, with the Devpost Learn skill pack. Version 1 was built on 16 October 2026 from an empty folder: scope, product requirements, a technical spec, and a checklist of three slices, each tested and committed before the next. For version 2 we ran the same skills again (scope, requirements, spec, then a five-slice checklist), so the planning documents in `devpost/` describe what is built now. The git history shows both rounds.
 
-The main design decision: the AI reads, plain code decides. A language model turns the messy notice into a fixed JSON shape, and every field of its reply is checked. The planner is ordinary JavaScript, so the same notice and jobs always give the same plan, and the tests pin the sample day to the minute. If no model is configured, or the model fails, built-in rules read the common formats and the page says which reader was used.
+The main design decision: **the AI reads, plain code decides.** A vision model turns the photo into areas, times and a transcript in a fixed shape, and every field of its answer is checked. If the areas fail the check, built-in rules read the transcript. The planner is ordinary JavaScript with no model in it, so the same notice and jobs always give the same plan, and the tests check that no job overlaps another or crosses a cut (unless it runs on backup, within the hours set) on the sample day and on a few hundred random days.
 
-Node.js with no packages, plain HTML, CSS and JavaScript, and any OpenAI-compatible model endpoint. A clean checkout runs with `node server/index.js`.
+Node.js 20 with no packages, plain HTML, CSS and JavaScript, a service worker and a web app manifest, and any OpenAI-compatible chat endpoint for text and photos. For the demo we used the company's own model gateway. A clean checkout runs with `node server/index.js`.
 
 ### Challenges we ran into
 
-Notices mix formats: `05:00-09:00`, `5am to 9am`, `17h00–21h00`, several areas on one line, periods that cross midnight, and sentences. The rules handle the tidy forms; the AI handles the sentences; the reply check keeps a bad answer from reaching the plan.
-
-The plan also had to be realistic. A job that needs four hours can't be split across two powered windows if it's a sewing order or a pot of beans, so OnHours never splits a job and explains every miss instead.
+- **A model that pads its answer.** In early tests of reading the sample photo, some replies filled their transcript with endless spaces and were cut off before the JSON ended. We put the areas first in the answer, asked for single spaces, and take a finished areas list out of a cut-off reply. It then goes through the same check as any other reply. Eight reads in a row gave all six areas right.
+- **The fallback that invented an area.** When the reply was a picture of something that is not a notice, the first version let the rules read its transcript and found an "area" in a screenshot. A reply that passes the check as "no outage times" is now trusted and never re-read.
+- **"Offline" is not one signal.** The browser's own online flag did not change when the network was switched off, and a stopped server looks the same to the page. The page counts an unreachable server as offline and remembers the last status it saw.
+- **A layout that jumped.** The accessibility audit found the page shifting as the example day drew in; reserving its space took the layout shift from 0.47 to about zero in our checks.
 
 ### Accomplishments that we're proud of
 
-The core journey works end to end on a fresh checkout with no key at all. Switching an AI model on lets it read looser wording, and the planning stays exactly the same. The planner is covered by tests that check no job ever touches an outage.
+The core journey works end to end on a fresh checkout with no key at all, in the browser and offline. With a vision model on, the sample photo is read in about three seconds. The page scores 100 in the Lighthouse accessibility, best-practices, SEO and agentic-browsing audits on a phone and on a laptop (measured on a local server on 20 October 2026). And the product has a point of view: the one place a normal planner fails is the phone with no power and no network, so that is where this one is built to work.
 
 ### What we learned
 
-Give the model the reading and keep the deciding in code. Asking for a strict shape, checking every field and keeping a plain fallback made the AI step dependable and left the rest easy to test.
+Give the AI one small job and keep every decision in code you can test. Planning first made that obvious early: the spec said what the model may do (read), the checklist put it in its own slice, and the tests pinned what the code must never do. It also made the scope honest. Speech input (it needs the network) and "what moved when the notice changes" (it needs its own screen) were cut on the first pass, because we could not make them reliable and show them on screen.
 
 ### What's next for OnHours
 
-Notices that cover a whole week, saving a household's usual jobs, jobs that can pause and resume (charging), and reading a photo of the notice.
+A notice that covers a whole week; showing what moved, and why, when a revised notice arrives; jobs that can pause and resume (charging); and speaking the jobs instead of typing them, once that can work with no network.
 
 ## Built with
 
-javascript, node.js, html, css, openai-compatible-api
+Tags: javascript, node.js, html5, css3, service-worker, pwa, openai-compatible-api, computer-vision
+
+Technology answer (within 255 characters):
+
+Node.js 20 (no packages), plain JavaScript, HTML and CSS, a service worker and web app manifest, canvas, an OpenAI-compatible chat API for text and vision, Newsreader and Geist fonts, node:test, and the Devpost Learn skill pack.
 
 ## Links
 
 - Repository: https://github.com/psychofict/onhours
-- Video: https://youtu.be/JEv8nrvxmA4
+- Video: to fill with the YouTube link of `submission/onhours-demo-v2.mp4` after it is uploaded
+- Planning documents: `devpost/scope.md`, `devpost/prd.md`, `devpost/spec.md`, `devpost/checklist.md` in the repository
+
+## Gallery images
+
+In `submission/gallery/`, in this order: `01-cover.jpg` (first, the cover), `02-photo-in.jpg`, `03-plan-out.jpg`, `04-says-why.jpg`, `05-offline.jpg`, `06-family-chat.jpg`. Each is 1800 x 1200 (3:2) and made from screenshots of the running app.
+
+## Sources for the statements about other apps
+
+Checked on 20 October 2026:
+
+- The App Store listing for ESP (EskomSePush) describes live power, water and internet outages in your suburb reported by neighbours, with alerts before a load shedding slot.
+- The ZETDC Load Shedding listing on Google Play (updated 20 May 2026) says it keeps you informed about load shedding schedules and power outages.
+- Ikeja Electric's public notice of 2 October 2026, reported by Legit.ng on 4 October 2026, says five Band A feeders missed the 20-hour daily minimum on 30 September and 1 October 2026.

@@ -1,0 +1,51 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan first (drawn for the video)</title>
+<link rel="stylesheet" href="/base.css">
+<style>
+  html, body { width: 1280px; height: 720px; overflow: hidden; background: var(--canvas); background-image: radial-gradient(120% 70% at 85% -10%, #FBE9BB 0%, rgba(251,233,187,0) 55%); }
+  .wrap { position: absolute; inset: 0; padding: 40px 80px; display: grid; grid-template-columns: 5fr 6fr; gap: 64px; align-content: center; }
+  .eyebrow { font-size: 14px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ash); animation: rise .8s var(--ease) .1s both; }
+  h1 { margin: 14px 0 0; font: 300 88px/1.0 "Newsreader", Georgia, serif; letter-spacing: -.025em; animation: rise .9s var(--ease) .2s both; }
+  h1 em { font-style: italic; font-weight: 400; background: linear-gradient(transparent 64%, var(--band) 64% 92%, transparent 92%); }
+  .files { display: grid; gap: 14px; margin-top: 44px; }
+  .file { display: flex; align-items: center; gap: 14px; background: #fff; border: 1px solid var(--hair); border-radius: 20px; padding: 16px 20px; box-shadow: 0 16px 28px -24px rgba(80,52,8,.4); }
+  .file .tick { opacity: 0; }
+  .file:nth-child(1) { animation: dim .8s var(--ease) .8s both, lit .5s var(--ease) 3.6s forwards } .file:nth-child(2) { animation: dim .8s var(--ease) 1.0s both, lit .5s var(--ease) 4.5s forwards } .file:nth-child(3) { animation: dim .8s var(--ease) 1.2s both, lit .5s var(--ease) 5.5s forwards } .file:nth-child(4) { animation: dim .8s var(--ease) 1.4s both, lit .5s var(--ease) 6.5s forwards }
+  .file:nth-child(1) .tick { animation: tickin .4s var(--ease) 3.7s forwards } .file:nth-child(2) .tick { animation: tickin .4s var(--ease) 4.6s forwards } .file:nth-child(3) .tick { animation: tickin .4s var(--ease) 5.6s forwards } .file:nth-child(4) .tick { animation: tickin .4s var(--ease) 6.6s forwards }
+  .tick { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--olive-pale); display: grid; place-items: center; }
+  .tick svg { width: 16px; height: 16px; fill: none; stroke: var(--olive-deep); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .file b { display: block; font-size: 21px; } .file span { color: var(--ash); font-size: 17px; }
+  .right { display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+  .step { display: grid; grid-template-columns: 1fr; gap: 6px; animation: rise .9s var(--ease) both; }
+  .right > :nth-child(1) { animation-delay: 7.4s } .right > :nth-child(2) { animation: rise .9s var(--ease) 8.0s both } .right > :nth-child(3) { animation-delay: 8.6s } .right > :nth-child(4) { animation: rise .9s var(--ease) 9.4s both } .right > :nth-child(5) { animation-delay: 10.2s }
+  .box { border-radius: 24px; padding: 20px 24px; border: 1px solid var(--hair); background: #fff; font-size: 22px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+  .box small { font-weight: 400; color: var(--ash); font-size: 16px; display: block; }
+  .ai { background: var(--olive-pale); border-color: #C5CDAC; } .code { background: var(--tint); border-color: #F0DFA9; }
+  .down { text-align: center; color: var(--ash); font-size: 26px; line-height: 1; }
+  .same { text-align: center; font: italic 400 36px/1.2 "Newsreader", Georgia, serif; color: var(--stone); margin-top: 8px; animation: rise .9s var(--ease) 11.6s both; }
+  @keyframes dim { from { opacity: 0; transform: translateY(14px); } to { opacity: .45; transform: none; } }
+  @keyframes lit { from { opacity: .45; } to { opacity: 1; } }
+  @keyframes tickin { from { opacity: 0; transform: scale(.6); } to { opacity: 1; transform: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+</style></head><body>
+<div class="wrap">
+  <div>
+    <div class="eyebrow">How it was built</div>
+    <h1>Plan first. <em>Then</em> build.</h1>
+    <div class="files">
+      <div class="file"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5.5 12.5 4.2 4.2 8.8-9.4"/></svg></span><div><b>scope.md</b><span>The idea, cut to a proof of concept</span></div></div>
+      <div class="file"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5.5 12.5 4.2 4.2 8.8-9.4"/></svg></span><div><b>prd.md</b><span>What every screen does, with checks</span></div></div>
+      <div class="file"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5.5 12.5 4.2 4.2 8.8-9.4"/></svg></span><div><b>spec.md</b><span>How it is built, in plain words</span></div></div>
+      <div class="file"><span class="tick"><svg viewBox="0 0 24 24"><path d="m5.5 12.5 4.2 4.2 8.8-9.4"/></svg></span><div><b>checklist.md</b><span>Five slices, each tested before the next</span></div></div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="step"><div class="box">A photo or pasted text <small>the notice, as it arrived</small></div></div>
+    <div class="down">&#8595;</div>
+    <div class="step"><div class="box ai">The AI reads it <small>areas and times only</small></div></div>
+    <div class="down">&#8595;</div>
+    <div class="step"><div class="box code">Plain, tested code places every job <small>the same notice, the same plan</small></div></div>
+    <div class="same">The AI reads. Plain code decides.</div>
+  </div>
+</div>
+</body></html>

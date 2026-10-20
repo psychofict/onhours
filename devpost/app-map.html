@@ -4,85 +4,92 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="light">
-<title>OnHours · App map</title>
+<title>OnHours · App map (version 2)</title>
 <style>
-  :root { --paper:#FBF8F1; --card:#fff; --ink:#1D1B16; --muted:#6B665C; --line:#ECE6DA; --sun:#F5C04A; --tint:#FCEFC9; }
+  :root { --paper:#F7F1E8; --card:#fff; --ink:#1C1B1A; --muted:#6A665F; --line:#E1DCD3; --sun:#E5B54F; --tint:#FBF0CF; --olive:#DCE2C8; }
   * { box-sizing: border-box; }
   body { margin:0; background:var(--paper); color:var(--ink); font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
-  main { width:min(860px,100% - 32px); margin:0 auto; padding:48px 0 64px; }
-  h1 { font:400 44px/1.1 Georgia,"Iowan Old Style",serif; margin:0 0 12px; letter-spacing:-0.02em; }
+  main { width:min(880px,100% - 32px); margin:0 auto; padding:48px 0 64px; }
+  h1 { font:300 46px/1.08 Georgia,"Iowan Old Style",serif; margin:0 0 12px; letter-spacing:-0.02em; }
   h2 { font:400 26px/1.2 Georgia,"Iowan Old Style",serif; margin:40px 0 12px; }
   p.lede { font-size:18px; color:#3B3830; margin:0; }
-  .card { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:20px 22px; margin:12px 0; }
-  code { font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; background:#F6F1E6; padding:1px 6px; border-radius:6px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:20px; padding:20px 22px; margin:12px 0; }
+  code { font:14px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace; background:#F3EDE0; padding:1px 6px; border-radius:6px; }
   ol.route { padding-left:22px; } ol.route li { margin:0 0 14px; }
   details { border:1px solid var(--line); border-radius:12px; padding:10px 14px; background:#FFFDF8; margin:8px 0; }
   summary { cursor:pointer; font-weight:600; }
-  summary:focus-visible, a:focus-visible { outline:3px solid #2F6FEB; outline-offset:2px; }
-  .tag { display:inline-block; font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+  summary:focus-visible, a:focus-visible { outline:3px solid #2A72DE; outline-offset:2px; }
+  .tag { display:inline-block; font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
   svg { width:100%; height:auto; display:block; }
   .small { font-size:14px; color:var(--muted); }
 </style>
 </head>
 <body>
 <main>
-  <span class="tag">App map · snapshot</span>
-  <h1>OnHours, in three pieces</h1>
-  <p class="lede">OnHours turns a pasted power-cut notice into a day plan. A small Node server reads the notice (with an AI model if one is set up, otherwise with built-in rules), and a planner in the page places each job inside an unbroken powered stretch.</p>
+  <span class="tag">App map · snapshot of version 2</span>
+  <h1>OnHours, in four pieces</h1>
+  <p class="lede">OnHours turns a photo or pasted text of a power-cut notice into a day plan that still opens with no network. A small Node server lets an AI model read the notice (or built-in rules, when there is text). Plain code in the page places every job. A service worker keeps the page, and browser storage keeps the household.</p>
 
-  <h2>One action, end to end: Plan my day</h2>
+  <h2>One action, end to end: a photo becomes a plan</h2>
   <div class="card">
-    <svg viewBox="0 0 800 210" role="img" aria-labelledby="flow-title flow-desc">
-      <title id="flow-title">From a pasted notice to a drawn plan</title>
-      <desc id="flow-desc">The page posts the notice to the server's read-notice route, which uses the AI reader or the rules and returns areas. The page then calls planDay and draws the timeline.</desc>
-      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6B665C"/></marker></defs>
-      <g font-family="system-ui,sans-serif" font-size="13" fill="#1D1B16">
-        <rect x="10" y="20" width="170" height="70" rx="14" fill="#FFFDF8" stroke="#DCD5C6"/>
-        <text x="95" y="48" text-anchor="middle" font-weight="600">Read the notice</text>
-        <text x="95" y="68" text-anchor="middle" fill="#6B665C">public/app.js</text>
-        <rect x="250" y="20" width="230" height="70" rx="14" fill="#FFFDF8" stroke="#DCD5C6"/>
-        <text x="365" y="48" text-anchor="middle" font-weight="600">POST /api/read-notice</text>
-        <text x="365" y="68" text-anchor="middle" fill="#6B665C">server/read-notice.js · rules.js</text>
-        <rect x="560" y="20" width="230" height="70" rx="14" fill="#FCEFC9" stroke="#F5C04A"/>
-        <text x="675" y="48" text-anchor="middle" font-weight="600">AI model (optional)</text>
-        <text x="675" y="68" text-anchor="middle" fill="#6B665C">any OpenAI-compatible API</text>
-        <rect x="250" y="125" width="230" height="70" rx="14" fill="#FFFDF8" stroke="#DCD5C6"/>
-        <text x="365" y="153" text-anchor="middle" font-weight="600">planDay()</text>
-        <text x="365" y="173" text-anchor="middle" fill="#6B665C">public/planner.js</text>
-        <rect x="560" y="125" width="230" height="70" rx="14" fill="#FCEFC9" stroke="#F5C04A"/>
-        <text x="675" y="153" text-anchor="middle" font-weight="600">Timeline and Didn't fit</text>
-        <text x="675" y="173" text-anchor="middle" fill="#6B665C">draw() in public/app.js</text>
+    <svg viewBox="0 0 800 330" role="img" aria-labelledby="flow-title flow-desc">
+      <title id="flow-title">From a photo of the notice to a drawn plan</title>
+      <desc id="flow-desc">The page shrinks the photo and posts it to the server's read-notice route. The server asks a vision model for areas and a transcript, checks the areas, and falls back to the built-in rules on the transcript if the check fails. The page then calls planDay with the chosen area's outages, the jobs and the backup hours, draws the chart and saves the household. The service worker keeps the page's files so it opens offline.</desc>
+      <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="#6A665F"/></marker></defs>
+      <g font-family="system-ui,sans-serif" font-size="13" fill="#1C1B1A">
+        <rect x="10" y="20" width="200" height="70" rx="14" fill="#FFFDF8" stroke="#DCD5C6"/>
+        <text x="110" y="48" text-anchor="middle" font-weight="600">Choose a photo</text>
+        <text x="110" y="68" text-anchor="middle" fill="#6A665F">public/app.js · photo.js</text>
+        <rect x="290" y="20" width="230" height="70" rx="14" fill="#FFFDF8" stroke="#DCD5C6"/>
+        <text x="405" y="48" text-anchor="middle" font-weight="600">POST /api/read-notice</text>
+        <text x="405" y="68" text-anchor="middle" fill="#6A665F">server/read-notice.js</text>
+        <rect x="590" y="20" width="200" height="70" rx="14" fill="#DCE2C8" stroke="#C5CDAC"/>
+        <text x="690" y="48" text-anchor="middle" font-weight="600">Vision model</text>
+        <text x="690" y="68" text-anchor="middle" fill="#6A665F">any OpenAI-compatible API</text>
+        <rect x="290" y="125" width="230" height="70" rx="14" fill="#FFFDF8" stroke="#DCD5C6"/>
+        <text x="405" y="153" text-anchor="middle" font-weight="600">validateAreas(), then rulesRead()</text>
+        <text x="405" y="173" text-anchor="middle" fill="#6A665F">on the transcript if the check fails</text>
+        <rect x="10" y="125" width="200" height="70" rx="14" fill="#FBF0CF" stroke="#E5B54F"/>
+        <text x="110" y="153" text-anchor="middle" font-weight="600">planDay()</text>
+        <text x="110" y="173" text-anchor="middle" fill="#6A665F">public/planner.js</text>
+        <rect x="10" y="230" width="200" height="70" rx="14" fill="#FBF0CF" stroke="#E5B54F"/>
+        <text x="110" y="258" text-anchor="middle" font-weight="600">Day chart, Right now</text>
+        <text x="110" y="278" text-anchor="middle" fill="#6A665F">public/draw.js · now.js</text>
+        <rect x="290" y="230" width="230" height="70" rx="14" fill="#FFFDF8" stroke="#DCD5C6"/>
+        <text x="405" y="258" text-anchor="middle" font-weight="600">Saved on this device</text>
+        <text x="405" y="278" text-anchor="middle" fill="#6A665F">public/store.js · sw.js</text>
       </g>
-      <g stroke="#6B665C" stroke-width="1.5" fill="none" marker-end="url(#a)">
-        <path d="M180 55H246"/><path d="M480 55H556"/><path d="M365 90V121"/><path d="M480 160H556"/>
+      <g stroke="#6A665F" stroke-width="1.5" fill="none" marker-end="url(#a)">
+        <path d="M210 55H286"/><path d="M520 55H586"/><path d="M405 90V121"/><path d="M286 160H214"/><path d="M110 195V226"/><path d="M214 265H286"/>
       </g>
     </svg>
-    <p class="small">Nothing is stored. The only outside service is the optional model, and the app works without it.</p>
+    <p class="small">The model reads; <code>planDay()</code> decides. The photo is held in memory for one request and never stored. Everything after the server runs in the page, so it works with the server stopped.</p>
   </div>
 
   <h2>A reference route through the code</h2>
-  <p class="small">Three stops, in the order the action runs. Search for the names shown.</p>
+  <p class="small">Three stops, in the order the action runs. Search for the names shown. This route was followed by the build session, not toured by a learner.</p>
   <ol class="route">
-    <li><strong><code>public/app.js</code> → <code>readNotice()</code> and <code>plan()</code></strong><br>The page sends the text to the server, fills the area list from the reply, then calls the planner with the chosen area's outages and the jobs from <code>public/jobs.js</code>.</li>
-    <li><strong><code>server/read-notice.js</code> → <code>readNotice()</code>, <code>validateAreas()</code></strong><br>With the three <code>LLM_</code> variables set, it asks the model for one fixed JSON shape and checks every field. Any failure falls back to <code>rulesRead()</code> in <code>server/rules.js</code>, and the reply carries a note the page shows.</li>
-    <li><strong><code>public/planner.js</code> → <code>planDay()</code></strong><br>Turns outages into powered stretches between 05:00 and 23:00, sorts jobs (must-do, then longest), and gives each the earliest free gap that holds it in one go. A job with no such gap gets a one-line reason.</li>
+    <li><strong><code>public/app.js</code> → <code>readPhoto()</code>, <code>acceptAreas()</code>, <code>planNow()</code></strong><br>Shrinks the photo (<code>shrinkPhoto()</code> in <code>public/photo.js</code>), posts it, fills the area choices from the reply, then calls the planner with the chosen area's outages, the jobs from <code>public/jobs.js</code> and the backup hours.</li>
+    <li><strong><code>server/read-notice.js</code> → <code>readNoticeImage()</code>, <code>validateAreas()</code>, <code>salvageAreas()</code></strong><br>Asks the model for <code>areas</code> and a <code>transcript</code>, checks every field, takes a finished <code>areas</code> list out of a reply that was cut off, and trusts a valid "no outage times" answer instead of reading its transcript. If the areas fail the check but a transcript exists, <code>rulesRead()</code> in <code>public/rules.js</code> reads the transcript.</li>
+    <li><strong><code>public/planner.js</code> → <code>planDay()</code>, <code>earliestStart()</code></strong><br>Turns outages into powered stretches between 05:00 and 23:00, sorts jobs (must-do, then longest), and gives each the earliest start where it fits in one go. A job marked Runs on backup may cross an outage within the backup hours, and a job that fits nowhere gets a one-line reason from <code>missReason()</code>.</li>
   </ol>
 
   <h2>To change this, start here</h2>
-  <details><summary>The day's start and end (05:00 to 23:00)</summary><p>The <code>dayStart</code> and <code>dayEnd</code> defaults of <code>planDay()</code> in <code>public/planner.js</code>. The timeline reads them from the plan, so the drawing follows.</p></details>
-  <details><summary>How jobs are ordered</summary><p>The <code>valid.sort(...)</code> call in <code>planDay()</code>. The test <em>"sample day for Riverside East places jobs in unbroken powered stretches"</em> in <code>test/planner.test.js</code> pins the current order, so update it with the change.</p></details>
-  <details><summary>The sample notice and jobs</summary><p><code>public/sample.js</code>. Keep the data fictional.</p></details>
-  <details><summary>What the AI is asked</summary><p><code>SYSTEM_PROMPT</code> in <code>server/read-notice.js</code>. If the JSON shape changes, change <code>validateAreas()</code> and <code>test/read-notice.test.js</code> with it.</p></details>
-  <details><summary>Colours and type</summary><p>The custom properties at the top of <code>public/styles.css</code>. The page is light only.</p></details>
+  <details><summary>The day's start and end (05:00 to 23:00)</summary><p>The <code>dayStart</code> and <code>dayEnd</code> defaults of <code>planDay()</code> in <code>public/planner.js</code>. The chart reads them from the plan, so the drawing follows.</p></details>
+  <details><summary>How jobs are ordered, or how backup is spent</summary><p>The <code>valid.sort(...)</code> call and the backup branch in <code>planDay()</code>. The tests <em>"sample day for Riverside East with no backup places four jobs and misses the beans"</em> and <em>"with one hour of backup the beans run across the evening cut"</em> in <code>test/planner.test.js</code> pin the sample day to the minute, and a loop of random days checks that no job overlaps another or crosses a cut except on backup.</p></details>
+  <details><summary>What the AI is asked</summary><p><code>TEXT_PROMPT</code> and <code>IMAGE_PROMPT</code> in <code>server/read-notice.js</code>. If the JSON shape changes, change <code>validateAreas()</code>, <code>test/read-notice.test.js</code> and <code>test/read-photo.test.js</code> with it.</p></details>
+  <details><summary>The sample notice, photo and jobs</summary><p><code>public/sample.js</code> and <code>public/sample-notice.jpg</code> (made by <code>tools/sample-photo/make-photo.sh</code>). Keep the data fictional.</p></details>
+  <details><summary>Colours and type</summary><p>The custom properties at the top of <code>public/styles.css</code>. Yellow means power is on, olive means backup, blue means act. The page is light only.</p></details>
+  <details><summary>Adding a file to the page</summary><p>List it in <code>SHELL</code> in <code>public/sw.js</code> and bump <code>VERSION</code>. <code>test/sw.test.js</code> fails if a file in <code>public/</code> is missing from the list.</p></details>
 
   <h2>A practice to reuse</h2>
   <div class="card">
-    <p><strong>Give the model the reading, keep the deciding in code.</strong> The spec settled that the model only turns loose wording into a fixed JSON shape, and plain code places the jobs (<code>devpost/spec.md</code>, "Decisions and Open Issues"). That made the planner testable to the minute (<code>test/planner.test.js</code>) and let the app fall back to rules when the model fails (<code>test/read-notice.test.js</code>). On another project, the same split works wherever AI meets messy input: ask for a strict shape, check every field, and keep a plain fallback.</p>
+    <p><strong>Test the fallback with input it should refuse.</strong> The first version of the photo reader fell back to the rules on the model's transcript whenever the model found no areas. Reading a screenshot of the app itself (not a notice) showed the rules finding an "area" in it. The fix was a decision, recorded in <code>devpost/checklist.md</code> under Revisions and pinned by the test <em>"a picture the model says holds no outage times is not read again by the rules"</em> in <code>test/read-photo.test.js</code>: a reply that passes the check as "none found" is trusted. On another project, whenever a fallback stands behind an AI step, run it once on something that should produce nothing.</p>
   </div>
 
   <h2>Run it again</h2>
-  <p><code>node server/index.js</code>, then open <a href="http://localhost:5174">http://localhost:5174</a>. Tests: <code>node --test</code>.</p>
-  <p class="small">This map is a snapshot of the code after the build's final review on 16 October 2026 and can drift as the code changes.</p>
+  <p><code>node server/index.js</code>, then open <a href="http://localhost:5174">http://localhost:5174</a> and press Try the sample day. Tests: <code>node --test</code>.</p>
+  <p class="small">This map is a snapshot of the code after the version 2 build on 20 October 2026 and can drift as the code changes.</p>
 </main>
 </body>
 </html>

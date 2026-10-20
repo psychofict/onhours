@@ -5,9 +5,22 @@ const fs = require("fs");
 const path = require("path");
 const { execFileSync } = require("child_process");
 
-const PLAYWRIGHT = process.env.PLAYWRIGHT_CORE || "/home/eben/.nvm/versions/node/v22.20.0/lib/node_modules/@playwright/cli/node_modules/playwright-core";
-const CHROME = process.env.CHROME_BIN || "/home/eben/.cache/ms-playwright/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell";
+const PLAYWRIGHT = process.env.PLAYWRIGHT_CORE || "playwright-core";
+const CHROME = process.env.CHROME_BIN || undefined;
 const { chromium } = require(PLAYWRIGHT);
+
+// The screencast sends a picture only when the page repaints, and a pure opacity or transform animation can run
+// without repainting, so a tiny element is repainted 30 times a second to keep every frame of the film.
+const HEARTBEAT = `(() => {
+  const beat = () => {
+    const e = document.createElement("i");
+    e.style.cssText = "position:fixed;right:0;bottom:0;width:2px;height:2px;pointer-events:none;z-index:2147483646;";
+    document.documentElement.append(e);
+    let on = false;
+    setInterval(() => { on = !on; e.style.background = on ? "rgba(247,241,232,.01)" : "rgba(247,241,232,.02)"; }, 33);
+  };
+  if (document.documentElement) beat(); else addEventListener("DOMContentLoaded", beat);
+})();`;
 
 const CURSOR = `(() => {
   const make = () => {
@@ -24,12 +37,13 @@ const CURSOR = `(() => {
 })();`;
 
 /** Opens a browser, runs `script(ctx)` while capturing, and writes <out>.mp4 at 30 fps. */
-async function record({ name, outDir, viewport, scale = 1, mobile = false, fingers = true, script, start = "about:blank", init = [] }) {
+async function record({ name, outDir, viewport, scale = 1, mobile = false, fingers = true, script, setup, start = "about:blank", init = [] }) {
   const dir = path.join(outDir, name);
   fs.rmSync(dir, { recursive: true, force: true });
   fs.mkdirSync(dir, { recursive: true });
-  const browser = await chromium.launch({ executablePath: CHROME });
+  const browser = await chromium.launch(CHROME ? { executablePath: CHROME } : {});
   const context = await browser.newContext({ viewport, deviceScaleFactor: scale, isMobile: mobile, hasTouch: mobile, reducedMotion: "no-preference", acceptDownloads: true });
+  await context.addInitScript(HEARTBEAT);
   if (fingers) await context.addInitScript(CURSOR);
   for (const s of init) await context.addInitScript(s);
   const page = await context.newPage();
@@ -47,12 +61,14 @@ async function record({ name, outDir, viewport, scale = 1, mobile = false, finge
   });
   const W = Math.round(viewport.width * scale), H = Math.round(viewport.height * scale);
   await page.goto(start);
+  if (setup) await setup({ page, context });
   await client.send("Page.startScreencast", { format: "jpeg", quality: 94, maxWidth: W, maxHeight: H, everyNthFrame: 1 });
   const wall0 = Date.now();
   let wallEnd = 0;
   const mark = (label) => { events.push({ label, t: (Date.now() - wall0) / 1000 }); };
   try {
-    await script({ page, context, client, mark, sleep: (ms) => page.waitForTimeout(ms) });
+    const at = async (t) => { const d = t * 1000 - (Date.now() - wall0); if (d > 0) await page.waitForTimeout(d); };
+    await script({ page, context, client, mark, at, sleep: (ms) => page.waitForTimeout(ms) });
   } finally {
     await page.waitForTimeout(400);
     wallEnd = (Date.now() - wall0) / 1000;
@@ -121,7 +137,20 @@ function hand(page) {
       requestAnimationFrame(step);
     }), [y, ms]);
   }
-  return { moveTo, point, click, type, scrollTo };
+  // Smooth-scroll the page so an element sits `offset` px below the top of the screen.
+  async function scrollToEl(selector, { offset = 16, ms = 900 } = {}) {
+    const top = await page.evaluate(([sel, off]) => document.querySelector(sel).getBoundingClientRect().top + scrollY - off, [selector, offset]);
+    await scrollTo(Math.max(0, top), ms);
+  }
+  // Smooth-scroll the inside of a scrolling element (the plan panel on a laptop).
+  async function scrollEl(selector, top, ms = 900) {
+    await page.evaluate(([sel, to, dur]) => new Promise((resolve) => {
+      const el = document.querySelector(sel), from = el.scrollTop, t0 = performance.now();
+      const step = (now) => { const k = Math.min(1, (now - t0) / dur), e = k * k * (3 - 2 * k); el.scrollTop = from + (to - from) * e; k < 1 ? requestAnimationFrame(step) : resolve(); };
+      requestAnimationFrame(step);
+    }), [selector, top, ms]);
+  }
+  return { moveTo, point, click, type, scrollTo, scrollToEl, scrollEl };
 }
 
 module.exports = { record, hand };

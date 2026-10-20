@@ -69,7 +69,7 @@ def assemble(tempo=1.0):
         t += d
         prev_scene = line["scene"]
     t += TAIL
-    mix = "".join(f"[a{i}]" for i in range(len(LINES))) + f"amix=inputs={len(LINES)}:normalize=0:dropout_transition=0[m]"
+    mix = "".join(f"[a{i}]" for i in range(len(LINES))) + f"amix=inputs={len(LINES)}:normalize=0:dropout_transition=0,apad=whole_dur={round(t, 3)}[m]"
     os.makedirs(WORK, exist_ok=True)
     out = os.path.join(WORK, "narration.wav")
     subprocess.check_call(["ffmpeg", "-v", "error", "-y", *inputs, "-filter_complex", ";".join(filters + [mix]), "-map", "[m]", "-t", str(round(t, 3)), "-ar", "48000", "-ac", "1", out])

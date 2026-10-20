@@ -1,0 +1,11 @@
+@font-face { font-family: "Newsreader"; src: url("/app/fonts/Newsreader-DisplayLight.woff2") format("woff2"); font-weight: 300; }
+@font-face { font-family: "Newsreader"; src: url("/app/fonts/Newsreader-Display.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Newsreader"; src: url("/app/fonts/Newsreader-DisplayItalic.woff2") format("woff2"); font-weight: 400; font-style: italic; }
+@font-face { font-family: "Geist"; src: url("/app/fonts/Geist-400.woff2") format("woff2"); font-weight: 400; }
+@font-face { font-family: "Geist"; src: url("/app/fonts/Geist-500.woff2") format("woff2"); font-weight: 500; }
+@font-face { font-family: "Geist"; src: url("/app/fonts/Geist-600.woff2") format("woff2"); font-weight: 600; }
+:root { --canvas:#F7F1E8; --ink:#1C1B1A; --stone:#4A4741; --ash:#6A665F; --hair:#E1DCD3; --tint:#FBF0CF; --band:#F3DC9B; --job:#E5B54F; --edge:#AF751B; --off:#EFEBE3; --stripe:#D9D2C4; --olive-pale:#DCE2C8; --olive:#849671; --olive-deep:#5C6F5D; --blue:#2A72DE; --ease:cubic-bezier(.32,.72,0,1); }
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { font: 400 16px/1.5 "Geist", system-ui, sans-serif; color: var(--ink); -webkit-font-smoothing: antialiased; font-feature-settings: "tnum" 1; }
+[hidden] { display: none !important; }
