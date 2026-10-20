@@ -14,7 +14,7 @@ WORK = os.path.join(ROOT, "submission", "work")
 TAKES = os.path.join(WORK, "takes")
 LINES = json.load(open(os.path.join(os.path.dirname(__file__), "narration.json")))
 GAP_LINE, GAP_SCENE = 0.5, 1.3     # seconds of quiet between lines, and between scenes
-LEAD, TAIL = 1.5, 4.5              # quiet before the first line (the picture opens first) and after the last
+LEAD, TAIL = 0.7, 4.5              # quiet before the first line (the picture opens first) and after the last
 VOICE, STYLE, MODEL = "en-US-natalie", "Narration", "GEN2"
 
 

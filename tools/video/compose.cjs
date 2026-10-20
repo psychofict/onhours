@@ -20,6 +20,7 @@ const PAPER = "0xF7F1E8";
 
 const P = (o) => new URLSearchParams(o).toString();
 const { SEGMENTS } = require("./segments.cjs");
+const isPhoneAt = (t) => { const s = SEGMENTS.find((x) => t >= x.t0 && t < x.t1); return Boolean(s && s.phone); };
 
 const run = (cmd, args) => execFileSync(cmd, args, { stdio: ["ignore", "ignore", "inherit"] });
 const probe = (f) => parseFloat(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f]).toString());
@@ -116,9 +117,21 @@ function writeCaptions() {
   cs.push({ start: TOTAL - 4.2, end: TOTAL - 0.1, text: "Open source on GitHub: psychofict/onhours" });
   const srt = cs.map((c, i) => `${i + 1}\n${ts(c.start, true)} --> ${ts(c.end, true)}\n${c.text}\n`).join("\n");
   fs.writeFileSync(path.join(ROOT, "submission", "onhours-demo-v2.srt"), srt);
-  const wrap = (t) => { if (t.length <= 66) return t; const mid = t.length / 2; const sp = [...t.matchAll(/ /g)].map((m) => m.index).sort((a, b) => Math.abs(a - mid) - Math.abs(b - mid))[0]; return `${t.slice(0, sp)}\\N${t.slice(sp + 1)}`; };
+  const wrap = (t, width = 66) => {
+    if (t.length <= width) return t;
+    // break as evenly as possible into the fewest lines of at most `width` characters
+    const lines = Math.ceil(t.length / width), target = t.length / lines;
+    const words = t.split(" "), out = [];
+    let cur = "";
+    for (const w of words) {
+      if (cur && (cur + " " + w).length > Math.max(target + 4, 1) && out.length < lines - 1) { out.push(cur); cur = w; } else cur = cur ? cur + " " + w : w;
+    }
+    out.push(cur);
+    return out.join("\\N");
+  };
   const ass = `[Script Info]\nScriptType: v4.00+\nPlayResX: 1920\nPlayResY: 1080\nWrapStyle: 2\n\n[V4+ Styles]\nFormat: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding\nStyle: Cap,Geist SemiBold,44,&H001A1B1C,&H001A1B1C,&H18FFFFFF,&H00000000,0,0,0,0,100,100,0,0,3,16,0,2,160,160,44,1\n\n[Events]\nFormat: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text\n` +
-    cs.map((c) => `Dialogue: 0,${ts(c.start)},${ts(c.end)},Cap,,0,0,0,,${wrap(c.text)}`).join("\n") + "\n";
+    // beside a phone the caption sits in the right-hand panel (margins 840 and 40) and wraps at 40 characters
+    cs.map((c) => { const phone = isPhoneAt((c.start + c.end) / 2); return `Dialogue: 0,${ts(c.start)},${ts(c.end)},Cap,,${phone ? 840 : 0},${phone ? 40 : 0},0,,${wrap(c.text, phone ? 40 : 66)}`; }).join("\n") + "\n";
   fs.writeFileSync(path.join(WORK, "captions.ass"), ass);
 }
 

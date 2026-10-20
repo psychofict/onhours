@@ -17,7 +17,8 @@ const WORK = path.join(ROOT, "submission", "work");
 const OUT = path.join(WORK, "shots");
 const SAMPLE_PHOTO = path.join(ROOT, "public", "sample-notice.jpg");
 const PHONE = { viewport: { width: 390, height: 844 }, scale: 2, mobile: true };
-const LAPTOP = { viewport: { width: 1280, height: 720 }, scale: 1.5, mobile: false };
+const LAPTOP = { viewport: { width: 1280, height: 720 }, scale: 1.5, mobile: false };       // the drawn scenes (1280 x 720)
+const DESK = { viewport: { width: 1100, height: 619 }, scale: 1920 / 1100, mobile: false };  // the app on a laptop: a narrower window, so its text is 16% larger in the film
 const NOW = "?now=08:00"; // the demo clock: eight in the morning, before the first cut ends
 
 // The phone's quick-settings panel, drawn over the page for the airplane-mode moment (no real brand's panel).
@@ -131,7 +132,7 @@ const SHOTS = {
     } }),
 
   // The product on a laptop: why a job did not fit, the backup that saves it, then a revised notice.
-  "desk-b": () => record({ name: "desk-b", outDir: OUT, ...LAPTOP, start: `${APP}/${NOW}`,
+  "desk-b": () => record({ name: "desk-b", outDir: OUT, ...DESK, start: `${APP}/${NOW}`,
     setup: async ({ page }) => {
       await page.click("#hero-sample");
       await page.waitForSelector("#chart .row-job");
@@ -143,10 +144,10 @@ const SHOTS = {
     },
     script: async ({ page, mark, at }) => {
       const h = hand(page);
-      await h.moveTo(1000, 520, 0);
+      await h.moveTo(860, 450, 0);
       await at(D("s3a", -0.03));
       mark("plan");
-      await h.moveTo(900, 420, 700);
+      await h.moveTo(780, 370, 700);
       await h.scrollEl("#plan-card", 700, 1600);
       await at(D("s3a", 2.57));
       await h.point(".misses li", { ms: 800, scroll: false });
@@ -159,7 +160,7 @@ const SHOTS = {
       const end = await page.evaluate(() => { const e = document.querySelector("#plan-card"); return e.scrollHeight - e.clientHeight; });
       await h.scrollEl("#plan-card", end, 1200);
       mark("beans-fit");
-      await h.moveTo(1180, 640, 1600);
+      await h.moveTo(1010, 560, 1600);
       await at(D("s3c", -0.2));
       await h.click("#backup-plus", { ms: 900 });
       mark("plus");
@@ -268,7 +269,7 @@ const SHOTS = {
   planfirst: () => record({ name: "planfirst", outDir: OUT, ...LAPTOP, fingers: false, start: `${SCENES}/planfirst.html`, script: async ({ sleep }) => { await sleep(13400); } }),
 
   // The close: back to the first screen of the app.
-  closing: () => record({ name: "closing", outDir: OUT, ...LAPTOP, fingers: false, start: `${APP}/${NOW}`,
+  closing: () => record({ name: "closing", outDir: OUT, ...DESK, fingers: false, start: `${APP}/${NOW}`,
     setup: async ({ page }) => {
       await page.click("#hero-sample");
       await page.waitForSelector("#chart .row-job");
@@ -276,9 +277,9 @@ const SHOTS = {
     },
     script: async ({ page, sleep }) => {
       const h = hand(page);
-      await sleep(900);
-      await h.scrollTo(0, 3200);
-      await sleep(4300);
+      await sleep(700);
+      await h.scrollTo(40, 6800); // a slow 40 px drift down the first screen, so the end card is not a still
+      await sleep(400);
     } }),
 };
 

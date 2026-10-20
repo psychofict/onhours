@@ -113,8 +113,8 @@
  {
   "id": "s5a",
   "scene": 5,
-  "say": "Send the plan to the family chat as a picture, or add it to your calendar, with a reminder ten minutes before every cut.",
-  "caption": "Send the plan to the family chat as a picture, or add it to your calendar, with a reminder ten minutes before every cut.",
+  "say": "Send the plan to the family chat as a picture, or add it to your calendar, with a reminder ten minutes before every job and every cut.",
+  "caption": "Send the plan to the family chat as a picture, or add it to your calendar, with a reminder ten minutes before every job and every cut.",
   "gap": 1.6
  },
  {

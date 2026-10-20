@@ -29,7 +29,7 @@ const T = {
 
 // Which shot fills which stretch, and which panel sits beside the phone.
 const SEGMENTS = [
-  { shot: "chat", t0: 0, t1: T.chatEnd, phone: true, panels: [[0, T.chatEnd, { eyebrow: "The problem", title: "The schedule arrives as <em>a picture</em>.", sub: "In the group chat, a few hours before the power goes.", time: "07:12" }]] },
+  { shot: "chat", t0: 0, t1: T.chatEnd, phone: true, panels: [[0, T.chatEnd, { eyebrow: "The problem", title: "The schedule arrives as <em>a picture</em>.", sub: "In the group chat, a few hours before the power goes. OnHours is for anyone who runs a home or a small business around the grid.", time: "07:12" }]] },
   { shot: "phone-a", t0: T.chatEnd, t1: T.deskStart, phone: true, panels: [
     [T.chatEnd, E("s2b"), { eyebrow: "Photo in, plan out", title: "Take a photo. <em>Get a day.</em>", sub: "OnHours reads every area and its power cuts, then plans around them.", time: "08:00" }],
     [E("s2b"), S("s2d", -0.5), { eyebrow: "The plan", title: "Every job in <em>one stretch</em>.", sub: "Must-do jobs first. Nothing starts and then loses its power.", time: "08:00" }],
@@ -41,7 +41,7 @@ const SEGMENTS = [
     [T.phoneCStart, S("s4c", 1.4), { eyebrow: "When the lights go out", title: "Your plan, <em>saved</em> on the phone.", sub: "Jobs, area and last notice, kept in this browser only.", time: "08:00" }],
     [S("s4c", 1.4), S("s4d"), { eyebrow: "No power. No network.", title: "Still <em>there</em>.", sub: "Right now: power is off until 09:00. Next: sew the choir order at 09:00.", foot: "Demo clock set to 08:00.", time: "08:00", airplane: "1" }],
     [S("s4d"), S("s5a", -0.04), { eyebrow: "Yours alone", title: "No account. <em>Nothing tracked.</em>", sub: "Forget this device clears it all.", time: "08:00", airplane: "1" }],
-    [S("s5a", -0.04), T.audienceStart, { eyebrow: "Into the family chat", title: "A picture, <em>or a calendar</em>.", sub: "A reminder ten minutes before every cut.", time: "08:00", airplane: "1" }]] },
+    [S("s5a", -0.04), T.audienceStart, { eyebrow: "Into the family chat", title: "A picture, <em>or a calendar</em>.", sub: "A reminder ten minutes before every job and every cut.", time: "08:00", airplane: "1" }]] },
   { shot: "audience", t0: T.audienceStart, t1: T.planfirstStart, phone: false },
   { shot: "planfirst", t0: T.planfirstStart, t1: T.closingStart, phone: false },
   { shot: "closing", t0: T.closingStart, t1: TOTAL, phone: false },
