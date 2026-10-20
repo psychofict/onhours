@@ -17,3 +17,7 @@ node_modules/
 
 # Generated fleet context, never committed
 CLAUDE.local.md
+
+# Browser tool scratch
+/.playwright-cli/
+/submission/work/
