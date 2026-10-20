@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Sample notice (fictional)</title>
+<style>
+  /* A fictional printed notice, photographed on a wall. Every name here is made up. */
+  html,body{margin:0;width:1200px;height:1340px;overflow:hidden}
+  body{background:
+    radial-gradient(120% 90% at 50% 40%, #d9d3c6 0%, #c9c2b3 60%, #b4ad9e 100%);
+    font-family:"Inter","Helvetica Neue",Arial,sans-serif;position:relative}
+  .wall{position:absolute;inset:0;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.3  0 0 0 0 0.28  0 0 0 0 0.25  0 0 0 .22 0'/></filter><rect width='300' height='300' filter='url(%23n)'/></svg>");mix-blend-mode:multiply}
+  .sheet{position:absolute;left:150px;top:120px;width:900px;height:1100px;background:#fbfaf6;
+    transform:perspective(1600px) rotateX(2.5deg) rotateY(-1.5deg) rotateZ(-1.4deg);
+    box-shadow:0 30px 60px -20px rgba(40,32,20,.55),0 2px 0 rgba(255,255,255,.5) inset;padding:70px 64px;box-sizing:border-box;color:#1b1a17}
+  .tape{position:absolute;top:-26px;width:150px;height:56px;background:rgba(235,222,170,.72);box-shadow:0 2px 6px rgba(0,0,0,.18)}
+  .tape.l{left:60px;transform:rotate(-7deg)} .tape.r{right:60px;transform:rotate(6deg)}
+  .bar{height:14px;background:repeating-linear-gradient(135deg,#1b1a17 0 14px,#f2c14a 14px 28px);margin-bottom:34px}
+  h1{margin:0;font-size:60px;letter-spacing:.02em;line-height:1.05;font-weight:800}
+  .sub{margin:14px 0 36px;font-size:30px;font-weight:500;color:#3d3a33}
+  table{width:100%;border-collapse:collapse;font-size:27px}
+  th{font-size:20px;letter-spacing:.14em;text-transform:uppercase;text-align:left;padding:12px 10px;border-bottom:3px solid #1b1a17;color:#4b473e}
+  td{padding:22px 10px;border-bottom:1.5px solid #bdb7a8;vertical-align:top;line-height:1.35}
+  td.g{font-weight:800;font-size:38px;width:70px}
+  td.a{font-weight:700;width:300px}
+  td.t{font-weight:500}
+  .note{margin-top:34px;font-size:23px;line-height:1.45;color:#3d3a33}
+  .stamp{position:absolute;right:56px;bottom:50px;border:3px solid #7a2f1f;color:#7a2f1f;padding:10px 18px;font-weight:800;letter-spacing:.12em;font-size:20px;transform:rotate(-6deg);opacity:.8}
+</style></head><body>
+<div class="wall"></div>
+<div class="sheet">
+  <div class="tape l"></div><div class="tape r"></div>
+  <div class="bar"></div>
+  <h1>POWER SUPPLY NOTICE</h1>
+  <p class="sub">Planned load management · Thursday 22 October</p>
+  <table>
+    <tr><th>Group</th><th>Areas</th><th>Power off</th></tr>
+    <tr><td class="g">1</td><td class="a">Kopje Heights, Mbizi Park</td><td class="t">06:00 – 10:00<br>18:00 – 22:00</td></tr>
+    <tr><td class="g">2</td><td class="a">Riverside East, Siding Road</td><td class="t">05:00 – 09:00<br>13:00 – 15:00<br>20:00 – 23:00</td></tr>
+    <tr><td class="g">3</td><td class="a">Market Square</td><td class="t">10:00 – 14:00</td></tr>
+    <tr><td class="g">4</td><td class="a">Hillside Extension</td><td class="t">2am to 6am<br>and from 4 in the afternoon until 8pm</td></tr>
+  </table>
+  <p class="note">Supply will be restored as soon as works are complete.<br>Please plan accordingly.</p>
+  <div class="stamp">FORWARDED AS RECEIVED</div>
+</div>
+</body></html>

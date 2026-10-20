@@ -300,3 +300,4 @@ dialog::backdrop { background: rgba(247, 241, 232, 0.8); }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 .chart.still .row-job, .chart.still .bar { animation: none; }
+.preview img { cursor: pointer; }

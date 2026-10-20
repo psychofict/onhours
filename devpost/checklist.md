@@ -31,7 +31,7 @@ Version 2 of OnHours. Version 1's three slices (a pasted notice becomes a day pl
   Learner check: Open the page on a phone-sized window, run the sample, and say whether the day reads at a glance and whether Right now answers "what do I do next?".
   Commit: `Rebuild the page phone-first with a day ribbon and a Right now card`
 
-- [ ] **3. A photo of the notice becomes the plan**
+- [x] **3. A photo of the notice becomes the plan**
   Becomes usable: Choose the sample photo (or any photo of a notice) and the page reads its areas and outage times; with no AI, or on a failure, the page says so plainly and the Text tab still works.
   Why now: It is the riskiest outside dependency, and the opening of the demo, so it is proved against the real gateway once the page that shows it exists.
   PRD ref: `prd.md > Reading the notice`, `prd.md > States and Boundaries`
@@ -83,3 +83,7 @@ Reflection: not applicable.
 Activity mode: focused alternative.
 
 ## Revisions
+
+- Slice 1 placed jobs by a plain earliest-start rule and no search: an arrangement search was considered, to let backup rescue a job by reordering the others, and dropped because the sample day needed none and a fixed rule is easier to check and to explain on screen.
+- The planner scans every minute for the earliest start, not a five-minute grid, so jobs begin exactly when the job before ends or an outage ends; `spec.md > Planner` says so.
+- Slice 3: the first live photo reads through the company gateway returned all six areas in about 3 seconds. Eight reads of the sample photo in a row were all six areas right (2.6 to 3.4 seconds each) once the prompt put "areas" before "transcript" and told the model to use single spaces. Before that change one read in four ran 17 seconds and came back cut off, because the model filled its transcript with endless padding spaces; the page now also takes the finished areas out of a cut-off reply and checks them like any other. A rotated, noisy copy of the photo gave the right times for all six areas in three reads but one name misread as "Kopie Heights" every time, which is why the page tells the person to check the names against the notice. A screenshot of the app itself gave no areas, and the first version of the fallback then read its transcript and invented one, so a reply that passes the check as "no outage times" is now trusted and never re-read by the rules.

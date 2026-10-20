@@ -5,6 +5,7 @@ import { parseJobs } from "./jobtext.js";
 import { SAMPLE_NOTICE, SAMPLE_JOBS, SAMPLE_AREA } from "./sample.js";
 import { createJobsEditor } from "./jobs.js";
 import { wireCopy } from "./share.js";
+import { shrinkPhoto } from "./photo.js";
 import { el, icon, renderChart, renderMini, renderNow, renderMisses } from "./draw.js";
 
 const $ = (id) => document.getElementById(id);
@@ -110,7 +111,7 @@ function acceptAreas(data) {
   state.areas = data.areas || [];
   const label = data.reader === "ai" ? (data.from === "photo" ? "Read from the photo by AI" : "Read by AI") : "Read by built-in rules";
   if (!state.areas.length) {
-    setNote("No outage times found. Check the notice has times like 05:00–09:00.", { tag: label, kind: "warn" });
+    setNote(`No outage times found. Check the notice has times like 05:00–09:00.${data.from === "photo" && data.note ? ` ${data.note}` : ""}`, { tag: label, kind: "warn" });
   } else {
     const n = state.areas.length;
     setNote(`${n} area${n === 1 ? "" : "s"} found.${data.note ? ` ${data.note}` : ""}`, { tag: label });
@@ -251,7 +252,7 @@ $("use-sample").addEventListener("click", () => {
 });
 $("read").addEventListener("click", readText);
 
-// ---- Photo reading is added in slice 3: until the server says it can, the tab explains itself ----
+// ---- Reading a photo of the notice ----
 function showPhotoAvailability() {
   const off = !state.vision;
   $("photo-choose").disabled = off;
@@ -261,6 +262,75 @@ function showPhotoAvailability() {
     ? "Photo reading needs the AI reader, which is switched off in this copy. Use the Text tab: it works with no setup."
     : "The photo goes to the AI reader to be read. It is not stored.";
 }
+
+const PHOTO_PROBLEMS = {
+  "too-big": "That photo is very large. Try a smaller one, or paste the text.",
+  "unreadable-format": "This browser can't open that kind of photo. Try a screenshot or a JPEG, or paste the text.",
+  "not-an-image": "That file is not a picture. Choose a photo of the notice, or paste the text.",
+};
+
+let photoUrl = null;
+function showPreview(blob) {
+  if (photoUrl) URL.revokeObjectURL(photoUrl);
+  photoUrl = URL.createObjectURL(blob);
+  $("photo-img").src = photoUrl;
+  $("photo-preview").hidden = false;
+  $("photo-choose").hidden = true;
+}
+function setReading(on) {
+  $("photo-preview").classList.toggle("reading", on);
+  for (const id of ["photo-choose", "photo-sample", "read"]) { $(id).disabled = on || (id !== "read" && !state.vision); }
+  if (on) { showSkeleton(); setNote("Reading the photo…", { kind: "" }); }
+}
+
+async function readPhoto(blob) {
+  if (!navigator.onLine) { setNote("Photo reading needs a connection. The Text tab works offline.", { kind: "warn" }); return; }
+  let dataUrl;
+  try {
+    dataUrl = await shrinkPhoto(blob);
+  } catch (e) {
+    setNote(PHOTO_PROBLEMS[e.message] || PHOTO_PROBLEMS["unreadable-format"], { kind: "err" });
+    return;
+  }
+  showPreview(blob);
+  setReading(true);
+  try {
+    const res = await fetch("/api/read-notice", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ image: dataUrl }) });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setNote(data.error || "I couldn't read that photo. Try again, or paste the text.", { kind: "err" });
+      state.areas = [];
+      fillAreas();
+      return;
+    }
+    if (data.transcript) $("notice").value = data.transcript;
+    acceptAreas({ ...data, note: [data.note, data.transcript ? "The text it saw is in the Text tab, in case you want to check it." : ""].filter(Boolean).join(" ") });
+  } catch {
+    setNote("I couldn't reach the reader. Check your connection, or paste the text.", { kind: "err" });
+    state.areas = [];
+    fillAreas();
+  } finally {
+    setReading(false);
+    showPhotoAvailability();
+  }
+}
+
+$("photo-choose").addEventListener("click", () => $("photo-input").click());
+$("photo-input").addEventListener("change", (e) => {
+  const file = e.target.files?.[0];
+  e.target.value = "";
+  if (file) readPhoto(file);
+});
+$("photo-img").addEventListener("click", () => { if (state.vision) $("photo-input").click(); });
+$("photo-sample").addEventListener("click", async () => {
+  try {
+    const res = await fetch("/sample-notice.jpg");
+    if (!res.ok) throw new Error("missing");
+    readPhoto(await res.blob());
+  } catch {
+    setNote("The sample photo needs a connection. Try the sample text instead.", { kind: "warn" });
+  }
+});
 
 // ---- The sample day in one tap ----
 function loadSampleDay() {

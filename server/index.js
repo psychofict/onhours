@@ -3,7 +3,7 @@ import http from "node:http";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize, sep } from "node:path";
 import { fileURLToPath } from "node:url";
-import { readNotice, aiConfigured } from "./read-notice.js";
+import { readNotice, readNoticeImage, aiConfigured, visionConfigured, isImageDataUrl } from "./read-notice.js";
 
 const ROOT = fileURLToPath(new URL("../public/", import.meta.url));
 const PORT = Number(process.env.PORT) || 5174;
@@ -17,6 +17,8 @@ const TYPES = {
   ".svg": "image/svg+xml",
   ".png": "image/png",
   ".txt": "text/plain; charset=utf-8",
+  ".jpg": "image/jpeg",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
 };
 
 const SECURITY_HEADERS = {
@@ -25,8 +27,8 @@ const SECURITY_HEADERS = {
   "X-Frame-Options": "DENY",
 };
 
-function send(res, status, body, type = "application/json; charset=utf-8") {
-  res.writeHead(status, { "Content-Type": type, "Cache-Control": "no-store", ...SECURITY_HEADERS });
+function send(res, status, body, type = "application/json; charset=utf-8", cache = "no-store") {
+  res.writeHead(status, { "Content-Type": type, "Cache-Control": cache, ...SECURITY_HEADERS });
   res.end(typeof body === "string" || Buffer.isBuffer(body) ? body : JSON.stringify(body));
 }
 
@@ -38,16 +40,17 @@ async function serveStatic(req, res) {
   if (!file.startsWith(ROOT.endsWith(sep) ? ROOT : ROOT + sep)) return send(res, 404, { error: "Not found" });
   try {
     const body = await readFile(file);
-    send(res, 200, body, TYPES[extname(file)] || "application/octet-stream");
+    send(res, 200, body, TYPES[extname(file)] || "application/octet-stream", "no-cache");
   } catch {
     send(res, 404, { error: "Not found" });
   }
 }
 
-const MAX_BODY = 16 * 1024;
+const MAX_TEXT_BODY = 16 * 1024;
+const MAX_BODY = 3 * 1024 * 1024; // a photo, after the page has shrunk it
 const MAX_TEXT = 8000;
 
-/** Read a JSON body, counting bytes as they arrive; null when it is too large or not JSON. */
+/** Read a JSON body, counting bytes as they arrive; { tooBig } when it is too large, { body: null } when it is not JSON. */
 function readJson(req) {
   return new Promise((resolve) => {
     let size = 0;
@@ -55,27 +58,39 @@ function readJson(req) {
     let tooBig = false;
     req.on("data", (chunk) => {
       size += chunk.length;
-      if (size > MAX_BODY) { tooBig = true; return; }
+      if (tooBig) return;
+      if (size > MAX_BODY) { tooBig = true; chunks.length = 0; resolve({ tooBig: true }); return; }
       chunks.push(chunk);
     });
     req.on("end", () => {
-      if (tooBig) return resolve({ tooBig: true });
-      try { resolve({ body: JSON.parse(Buffer.concat(chunks).toString("utf8")) }); } catch { resolve({ body: null }); }
+      if (tooBig) return;
+      try { resolve({ body: JSON.parse(Buffer.concat(chunks).toString("utf8")), size }); } catch { resolve({ body: null, size }); }
     });
     req.on("error", () => resolve({ body: null }));
   });
 }
 
+const TOO_LONG = "That notice is too long. Paste up to 8,000 characters.";
+
 export const routes = {
-  "GET /api/status": async (req, res) => send(res, 200, { ai: aiConfigured(process.env) }),
+  "GET /api/status": async (req, res) => send(res, 200, { ai: aiConfigured(process.env), vision: visionConfigured(process.env) }),
   "POST /api/read-notice": async (req, res) => {
-    const { tooBig, body } = await readJson(req);
-    if (tooBig) return send(res, 413, { error: "That notice is too long. Paste up to 8,000 characters." });
+    const { tooBig, body, size } = await readJson(req);
+    if (tooBig) {
+      res.once("finish", () => req.destroy()); // stop reading a body we have already refused
+      return send(res, 413, { error: "That is too large to read. Try a smaller photo, or paste the text." });
+    }
+    if (typeof body?.image === "string") {
+      if (!isImageDataUrl(body.image)) return send(res, 400, { error: "That does not look like a photo I can read. Try a JPEG or PNG." });
+      const result = await readNoticeImage(body.image, process.env);
+      if (result.error) return send(res, result.code === "off" ? 501 : 502, { error: result.error });
+      return send(res, 200, result);
+    }
+    if (size > MAX_TEXT_BODY) return send(res, 413, { error: TOO_LONG });
     const text = typeof body?.text === "string" ? body.text : "";
     if (!text.trim()) return send(res, 400, { error: "Paste a notice first." });
-    if (text.length > MAX_TEXT) return send(res, 400, { error: "That notice is too long. Paste up to 8,000 characters." });
-    const result = await readNotice(text, process.env);
-    send(res, 200, result);
+    if (text.length > MAX_TEXT) return send(res, 400, { error: TOO_LONG });
+    send(res, 200, await readNotice(text, process.env));
   },
 };
 
