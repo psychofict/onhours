@@ -29,7 +29,7 @@ node tools/video/record.cjs                       # every shot, or name some: re
 node tools/video/compose.cjs                      # writes submission/onhours-demo-v2.mp4 and .srt
 
 # 4. The written script, with its times taken from the finished narration
-python3 tools/video/make-script.py --lufs -16.1 --peak -1.4   # writes submission/video-script.md
+python3 tools/video/make-script.py --lufs -16.2 --peak -1.3   # writes submission/video-script.md
 ```
 
 Then check the result:
@@ -58,6 +58,6 @@ The recorded shots use the page's demo clock (`?now=08:00`), so "Right now" alwa
 
 ## Measured on the finished film
 
-Length 158.8 s (2:38.8), 1920 x 1080 at 30 frames a second, H.264 video and AAC audio (mono, 48 kHz), integrated loudness -16.1 LUFS, true peak -1.4 dBFS, 22.5 MB (ffprobe and ffmpeg ebur128, 21 October 2026). The caption file `onhours-demo-v2.srt` has the same words as the burned-in captions.
+Length 159.2 s (2:39.2), 1920 x 1080 at 30 frames a second, H.264 video and AAC audio (mono, 48 kHz), integrated loudness -16.2 LUFS, true peak -1.3 dBFS, 24.3 MB (ffprobe and ffmpeg ebur128, 21 October 2026). The caption file `onhours-demo-v2.srt` has the same words as the burned-in captions.
 
 If you change a line, or use a different voice, the lines may change length. The shots are timed from the narration, so run all four steps again.

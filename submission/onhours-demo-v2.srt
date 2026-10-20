@@ -1,0 +1,207 @@
+1
+00:00:00,700 --> 00:00:03,977
+Every few days, a photo like this lands in the street group chat.
+
+2
+00:00:04,327 --> 00:00:05,756
+Tomorrow's power cuts.
+
+3
+00:00:05,756 --> 00:00:08,778
+And everyone does the same sum in their head.
+
+4
+00:00:09,128 --> 00:00:10,527
+When is my area off?
+
+5
+00:00:10,527 --> 00:00:12,725
+And what can I still get done?
+
+6
+00:00:13,125 --> 00:00:14,196
+This is OnHours.
+
+7
+00:00:14,196 --> 00:00:17,675
+Take a photo of the notice, and it reads every area,
+
+8
+00:00:17,675 --> 00:00:19,113
+with its power cuts.
+
+9
+00:00:19,513 --> 00:00:20,365
+Choose yours.
+
+10
+00:00:20,365 --> 00:00:23,511
+Keep your jobs, or type new ones in plain words.
+
+11
+00:00:23,511 --> 00:00:24,791
+Then plan the day.
+
+12
+00:00:25,691 --> 00:00:29,081
+Every job gets one unbroken stretch when the power is on.
+
+13
+00:00:29,081 --> 00:00:32,334
+Nothing starts, and then loses power halfway through.
+
+14
+00:00:32,734 --> 00:00:34,824
+The AI only reads the notice.
+
+15
+00:00:34,824 --> 00:00:37,419
+Plain, tested code places every job,
+
+16
+00:00:37,419 --> 00:00:40,834
+so the same notice always gives the same plan.
+
+17
+00:00:41,234 --> 00:00:43,400
+It copes with a messy picture too.
+
+18
+00:00:43,400 --> 00:00:47,987
+This one is tilted, laid out differently, and writes the times in words.
+
+19
+00:00:47,987 --> 00:00:52,419
+It still reads five areas, and splits the overnight cut at midnight.
+
+20
+00:00:53,719 --> 00:00:56,413
+When a job can't fit, OnHours says why.
+
+21
+00:00:56,413 --> 00:00:59,038
+These beans need five hours in one go,
+
+22
+00:00:59,038 --> 00:01:02,661
+and the longest stretch left is four hours fifteen.
+
+23
+00:01:03,461 --> 00:01:06,213
+If you have an inverter, say how long it runs.
+
+24
+00:01:06,213 --> 00:01:09,622
+Now the beans fit, and the plan tells you when to switch:
+
+25
+00:01:09,622 --> 00:01:12,534
+eight o'clock, for the last forty-five minutes.
+
+26
+00:01:12,934 --> 00:01:16,128
+Backup is just one number: the hours it runs.
+
+27
+00:01:16,128 --> 00:01:17,719
+Nothing to calculate.
+
+28
+00:01:18,319 --> 00:01:20,745
+Then the chat sends a revised notice.
+
+29
+00:01:20,745 --> 00:01:23,891
+Paste it, and OnHours shows what moved, and why.
+
+30
+00:01:23,891 --> 00:01:27,990
+The iron shifts to four o'clock, and the beans no longer fit.
+
+31
+00:01:29,690 --> 00:01:32,322
+And here is the part that matters when the lights go out.
+
+32
+00:01:32,722 --> 00:01:34,423
+OnHours installs on the phone.
+
+33
+00:01:34,423 --> 00:01:38,207
+Next time you open it, your jobs and your plan are already there.
+
+34
+00:01:39,507 --> 00:01:41,746
+Switch on airplane mode, and reload.
+
+35
+00:01:41,746 --> 00:01:46,075
+It still tells you the power is off until nine, and what comes next.
+
+36
+00:01:47,975 --> 00:01:50,409
+Your jobs and your last notice stay on the phone.
+
+37
+00:01:50,409 --> 00:01:52,694
+There is no account, and nothing is tracked.
+
+38
+00:01:54,194 --> 00:01:56,848
+Send the plan to the family chat as a picture,
+
+39
+00:01:56,848 --> 00:01:58,405
+or add it to your calendar,
+
+40
+00:01:58,405 --> 00:02:01,909
+with a reminder ten minutes before every job and every cut.
+
+41
+00:02:03,309 --> 00:02:06,723
+It is for anyone who runs a home, or a small business,
+
+42
+00:02:06,723 --> 00:02:08,493
+around scheduled power cuts.
+
+43
+00:02:08,493 --> 00:02:11,880
+The tailor, the baker, the family with a water pump.
+
+44
+00:02:12,280 --> 00:02:14,668
+Wherever the schedule arrives as a message,
+
+45
+00:02:14,668 --> 00:02:17,878
+OnHours turns it into a day someone can actually follow.
+
+46
+00:02:18,378 --> 00:02:22,405
+We built it plan first, with the Devpost skill pack: scope,
+
+47
+00:02:22,405 --> 00:02:24,452
+requirements, spec, then code.
+
+48
+00:02:24,452 --> 00:02:27,318
+It taught us to give the AI one small job,
+
+49
+00:02:27,318 --> 00:02:30,694
+and to keep every decision in code you can test.
+
+50
+00:02:31,594 --> 00:02:32,153
+OnHours.
+
+51
+00:02:32,153 --> 00:02:34,767
+Plan your day around the power cuts.
+
+52
+00:02:34,967 --> 00:02:39,067
+Open source on GitHub: psychofict/onhours
