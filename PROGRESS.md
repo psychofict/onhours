@@ -22,6 +22,9 @@ Started from an empty folder with the Devpost Learn skill pack (`npx skills add 
 
 - Added the MIT `LICENSE` the hackathon rules ask for, filled the repository and video links in `submission/devpost-text.md`, and published the repository at https://github.com/psychofict/onhours.
 
-## Next
 
-- Complete and submit the Devpost form from `submission/devpost-text.md`.
+## 20 October 2026: version 2
+
+Plan first again, with the Devpost Learn skills: `devpost/UPGRADE-PLAN.md`, then new `scope.md`, `prd.md`, `spec.md` and `checklist.md` (five slices). Version 1 stays in the git history.
+
+- Slice 1, backup power: `planDay()` can carry a job marked Runs on backup across an outage, up to the hours set, and says when to switch. The built-in notice rules moved to `public/` so the page can use them. The sample day: with no backup the beans do not fit (4 h 15 min is the longest stretch); with 1 hour of backup they run 15:45 to 20:45, on backup 20:00 to 20:45. `node --test`: 22 tests pass, including 300 random days that check no overlaps, no mains job in an outage, and backup within budget.

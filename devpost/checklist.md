@@ -11,7 +11,7 @@ Version 2 of OnHours. Version 1's three slices (a pasted notice becomes a day pl
 
 ## Slices
 
-- [ ] **1. The planner carries a job across an outage on backup**
+- [x] **1. The planner carries a job across an outage on backup**
   Becomes usable: Set the backup hours, mark a job Runs on backup, and the sample day shows the slow-cooked beans placed with "On backup 20:00–20:45" instead of under Didn't fit. Text notices are read by rules that now live in the page's own folder.
   Why now: This is the new idea inside the kernel, and it is plain, testable code. Everything visual in the later slices draws what the planner returns, so its output shape has to be settled first.
   PRD ref: `prd.md > Planning the day`, `prd.md > Choosing the area and the backup`, `prd.md > The jobs list`

@@ -1,6 +1,7 @@
 // Built-in notice reader: finds areas and their outage times in common formats
-// (05:00-09:00, 5am to 9am, 17h00–21h00). Used when no AI model is configured
-// or when the model's answer fails the check.
+// (05:00-09:00, 5am to 9am, 17h00–21h00), including table rows read from a photo.
+// Used when no AI model is configured, when the model's answer fails the check, and in the
+// page itself so a text notice can be read with no network. Shared by server and page.
 
 const TIME = String.raw`(\d{1,2})(?:[:h.](\d{2}))?\s*(am|pm|a\.m\.|p\.m\.)?`;
 const RANGE = new RegExp(String.raw`(?<!\d)${TIME}\s*(?:-|–|—|to|until|till)\s*${TIME}`, "gi");
@@ -30,6 +31,9 @@ export function splitRange(start, end) {
 
 function areaNames(label) {
   const cleaned = label
+    .replace(/\u00a0/g, " ")
+    .replace(/^\s*\d{1,2}\s*\|/, " ")
+    .replace(/\|/g, " ")
     .replace(/[*_`]/g, "")
     .replace(/^\s*[-•·]\s*/, "")
     .replace(/^\s*(group|block|stage|zone|schedule)\s*[\w]{1,3}\s*[–—:-]\s*/i, "")
@@ -48,7 +52,9 @@ function areaNames(label) {
  */
 export function rulesRead(text) {
   const byName = new Map();
-  for (const line of String(text).split(/\r?\n/)) {
+  let previous = []; // area names on the last line that had any, for table rows that wrap
+  for (const raw of String(text).split(/\r?\n/)) {
+    const line = raw.replace(/\u00a0/g, " ");
     RANGE.lastIndex = 0;
     const matches = [...line.matchAll(RANGE)];
     if (!matches.length) continue;
@@ -64,7 +70,12 @@ export function rulesRead(text) {
     // or at the first time when there is no colon.
     let label = line.slice(0, matches[0].index);
     if (label.includes(":")) label = label.slice(0, label.indexOf(":"));
-    for (const name of areaNames(label)) {
+    let names = areaNames(label);
+    // A line that holds only times ("13:00 - 15:00", "and again 20:00 - 23:00") continues the row above.
+    const leftover = line.replace(RANGE, " ").replace(/\|/g, " ");
+    if (!names.length && previous.length && /^[\s,;&/–—-]*(?:(?:and|again|then|also|plus)[\s,;&/–—-]*)*$/i.test(leftover)) names = previous;
+    if (names.length) previous = names;
+    for (const name of names) {
       const existing = byName.get(name.toLowerCase());
       if (existing) existing.off.push(...off);
       else byName.set(name.toLowerCase(), { name, off: [...off] });

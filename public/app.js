@@ -85,7 +85,8 @@ function plan() {
     (state.areas.length ? els.area : els.notice).focus();
     return;
   }
-  const result = planDay({ outages: area.off, jobs: getJobs() });
+  const backupMinutes = Math.round((Number($("backup").value) || 0) * 60);
+  const result = planDay({ outages: area.off, jobs: getJobs(), backupMinutes });
   state.lastPlan = result;
   state.lastArea = area.name;
   $("copied").textContent = "";
@@ -136,7 +137,7 @@ function draw(result, areaName) {
   }
   result.placed.forEach((p, i) => {
     const block = document.createElement("div");
-    block.className = `block${p.job.must ? " must" : ""}`;
+    block.className = `block${p.job.must ? " must" : ""}${p.onBackup.length ? " on-backup" : ""}`;
     block.style.top = `${y(p.start) + 2}px`;
     const h = Math.max(y(p.end) - y(p.start) - 4, 24);
     block.style.height = `${h}px`;
@@ -145,6 +146,7 @@ function draw(result, areaName) {
     block.innerHTML = `<span class="name"></span><span class="time"></span>`;
     block.querySelector(".name").textContent = p.job.name;
     block.querySelector(".time").textContent = `${toClock(p.start)}–${toClock(p.end)}`;
+    if (p.onBackup.length) block.querySelector(".name").textContent += ` (on backup ${p.onBackup.map((b) => `${toClock(b.start)}–${toClock(b.end)}`).join(", ")})`;
     block.title = `${p.job.name}, ${toClock(p.start)} to ${toClock(p.end)}`;
     track.append(block);
   });
@@ -197,6 +199,7 @@ els.useSample.addEventListener("click", () => {
 els.read.addEventListener("click", readNotice);
 els.area.addEventListener("change", () => { showOffLine(); if (state.lastPlan) plan(); });
 els.plan.addEventListener("click", plan);
+$("backup").addEventListener("change", () => { if (state.lastPlan) plan(); });
 // Redraw only when the hour height changes (phone vs laptop), so blocks don't re-animate on every resize.
 let drawnPx = 0;
 window.addEventListener("resize", () => {

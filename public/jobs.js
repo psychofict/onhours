@@ -16,11 +16,13 @@ export function createJobsEditor(listEl, addButton, initialJobs) {
         <label class="num"><input name="hours" type="number" min="0" max="18" step="1" inputmode="numeric" aria-label="Hours"><span aria-hidden="true">h</span></label>
         <label class="num"><input name="minutes" type="number" min="0" max="59" step="5" inputmode="numeric" aria-label="Minutes"><span aria-hidden="true">min</span></label>
         <label class="switch"><input name="must" type="checkbox"><span></span>Must do today</label>
+        <label class="switch"><input name="backup" type="checkbox"><span></span>Runs on backup</label>
         <button type="button" class="remove" aria-label="Remove job">×</button>`;
       li.querySelector("[name=name]").value = job.name;
       li.querySelector("[name=hours]").value = job.minutes ? Math.floor(job.minutes / 60) : "";
       li.querySelector("[name=minutes]").value = job.minutes ? job.minutes % 60 : "";
       li.querySelector("[name=must]").checked = Boolean(job.must);
+      li.querySelector("[name=backup]").checked = Boolean(job.backup);
       li.querySelector(".remove").setAttribute("aria-label", `Remove ${job.name || "this job"}`);
       listEl.append(li);
     }
@@ -36,6 +38,7 @@ export function createJobsEditor(listEl, addButton, initialJobs) {
     job.name = li.querySelector("[name=name]").value;
     job.minutes = hours * 60 + minutes;
     job.must = li.querySelector("[name=must]").checked;
+    job.backup = li.querySelector("[name=backup]").checked;
   });
 
   listEl.addEventListener("click", (e) => {
@@ -49,11 +52,11 @@ export function createJobsEditor(listEl, addButton, initialJobs) {
   });
 
   addButton.addEventListener("click", () => {
-    const job = { id: nextId++, name: "", minutes: 0, must: false };
+    const job = { id: nextId++, name: "", minutes: 0, must: false, backup: false };
     jobs.push(job);
     render(job.id);
   });
 
   render();
-  return { getJobs: () => jobs.map(({ name, minutes, must }) => ({ name, minutes, must })) };
+  return { getJobs: () => jobs.map(({ name, minutes, must, backup }) => ({ name, minutes, must, backup })) };
 }

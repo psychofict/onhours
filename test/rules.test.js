@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { rulesRead } from "../server/rules.js";
+import { rulesRead } from "../public/rules.js";
 import { SAMPLE_NOTICE } from "../public/sample.js";
 
 const find = (areas, name) => areas.find((a) => a.name === name);

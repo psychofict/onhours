@@ -1,6 +1,6 @@
 // Notice reader: asks an OpenAI-compatible chat model to turn the pasted notice into
 // areas and outage times, checks the reply, and falls back to the built-in rules.
-import { rulesRead, splitRange } from "./rules.js";
+import { rulesRead, splitRange } from "../public/rules.js";
 
 const SYSTEM_PROMPT = `You read power outage notices and return JSON only.
 Return one JSON object with exactly one key, "areas": an array of objects.

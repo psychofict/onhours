@@ -172,3 +172,9 @@ textarea:focus-visible, select:focus-visible, input:focus-visible, .btn:focus-vi
   :root { --hour: 50px; }
 }
 @media (prefers-reduced-motion: reduce) { .block { animation: none; } .btn { transition: none; } }
+
+.backup-line { display: grid; gap: 6px; margin-top: 14px; font-size: 14px; color: var(--muted); }
+.backup-line input { max-width: 120px; height: 44px; padding: 0 12px; }
+.block.on-backup { border-left: 4px solid #849671; background: #F3F5EA; }
+.job { grid-template-columns: 92px 104px minmax(0, 1fr) 40px; }
+.job .switch { grid-column: span 2; }
