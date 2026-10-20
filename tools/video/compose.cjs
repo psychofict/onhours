@@ -15,28 +15,11 @@ const STAGES = path.join(WORK, "stages");
 const SEGS = path.join(WORK, "segments");
 const SCENES = process.env.SCENES || "http://localhost:5192";
 const CHROME = process.env.CHROME_BIN || undefined;
-const timeline = JSON.parse(fs.readFileSync(path.join(WORK, "timeline.json"), "utf8"));
-const TOTAL = timeline.total;
+const { timeline, TOTAL } = require("./segments.cjs");
 const PAPER = "0xF7F1E8";
 
-// Which shot fills which stretch of the film, and which panel sits beside the phone.
 const P = (o) => new URLSearchParams(o).toString();
-const SEGMENTS = [
-  { shot: "chat", t0: 0, t1: 10.0, phone: true, panels: [[0, 10.0, { eyebrow: "The problem", title: "The schedule arrives as <em>a picture</em>.", sub: "In the group chat, a few hours before the power goes.", time: "07:12" }]] },
-  { shot: "phone-a", t0: 10.0, t1: 41.9, phone: true, panels: [
-    [10.0, 23.5, { eyebrow: "Photo in, plan out", title: "Take a photo. <em>Get a day.</em>", sub: "OnHours reads every area and its power cuts, then plans around them." }],
-    [23.5, 41.9, { eyebrow: "How it decides", title: "The AI reads. <em>Code decides.</em>", flow: "1" }]] },
-  { shot: "desk-b", t0: 41.9, t1: 71.5, phone: false },
-  { shot: "home", t0: 71.5, t1: 75.0, phone: true, panels: [[71.5, 75.0, { eyebrow: "Installed, not signed up", title: "On your <em>home screen</em>.", sub: "One visit online. After that it opens with no network." }]] },
-  { shot: "phone-c", t0: 75.0, t1: 100.3, phone: true, panels: [
-    [75.0, 78.4, { eyebrow: "When the lights go out", title: "Your plan, <em>saved</em> on the phone.", sub: "Jobs, area and last notice, kept in this browser only." }],
-    [78.4, 86.9, { eyebrow: "No power. No network.", title: "Still <em>there</em>.", sub: "Right now: power is off until 15:00. Next: iron at 15:00.", airplane: "1" }],
-    [86.9, 93.1, { eyebrow: "Yours alone", title: "No account. <em>Nothing tracked.</em>", sub: "Forget this device clears it all.", airplane: "1" }],
-    [93.1, 100.3, { eyebrow: "Into the family chat", title: "A picture, <em>or a calendar</em>.", sub: "A reminder ten minutes before every cut.", airplane: "1" }]] },
-  { shot: "audience", t0: 100.3, t1: 118.0, phone: false },
-  { shot: "planfirst", t0: 118.0, t1: 131.0, phone: false },
-  { shot: "closing", t0: 131.0, t1: TOTAL, phone: false },
-];
+const { SEGMENTS } = require("./segments.cjs");
 
 const run = (cmd, args) => execFileSync(cmd, args, { stdio: ["ignore", "ignore", "inherit"] });
 const probe = (f) => parseFloat(execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", f]).toString());
@@ -62,7 +45,7 @@ async function makeStages() {
     await page.waitForTimeout(250);
     await page.screenshot({ path: j.file });
   }
-  const mp = await (await browser.newContext({ viewport: { width: 388, height: 840 } })).newPage();
+  const mp = await (await browser.newContext({ viewport: { width: 434, height: 940 } })).newPage();
   await mp.goto(`${SCENES}/mask.html`);
   await mp.screenshot({ path: path.join(STAGES, "mask.png") });
   await browser.close();
@@ -93,10 +76,10 @@ function segmentVideo(seg, idx) {
       last = `[b${i}]`;
     }
     const shotIdx = bgs.length, maskIdx = bgs.length + 1;
-    f.push(`[${shotIdx}:v]scale=388:840:flags=lanczos,${fit},format=yuva420p[scr]`);
+    f.push(`[${shotIdx}:v]scale=434:940:flags=lanczos,${fit},format=yuva420p[scr]`);
     f.push(`[${maskIdx}:v]format=gray[mk]`);
     f.push(`[scr][mk]alphamerge[rounded]`);
-    f.push(`${last}[rounded]overlay=256:74:shortest=1,${fades},format=yuv420p[v]`);
+    f.push(`${last}[rounded]overlay=257:83:shortest=1,${fades},format=yuv420p[v]`);
     args.push("-filter_complex", f.join(";"), "-map", "[v]");
   }
   args.push("-t", fmt(dur), "-r", "30", "-c:v", "libx264", "-preset", "veryfast", "-crf", "12", out);

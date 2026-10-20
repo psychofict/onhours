@@ -3,17 +3,18 @@
 <style>
   html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--canvas); }
   body { background-image: radial-gradient(70% 90% at 92% -12%, #FBE6B2 0%, rgba(251,230,178,0) 62%), radial-gradient(50% 60% at 0% 110%, #F3E8D2 0%, rgba(243,232,210,0) 70%); }
-  .phone { position: absolute; left: 240px; top: 22px; width: 420px; height: 920px; border-radius: 64px; background: linear-gradient(160deg, #FBF8F2 0%, #EDE6D8 100%); border: 1px solid #DDD5C5; box-shadow: 0 60px 90px -50px rgba(80,52,8,.55), 0 18px 30px -18px rgba(80,52,8,.3), inset 0 2px 0 #fff; }
-  .screen { position: absolute; left: 16px; top: 52px; width: 388px; height: 840px; border-radius: 44px; background: #fff; box-shadow: 0 0 0 1px #D9D1C1; }
+  .phone { position: absolute; left: 240px; top: 30px; width: 468px; height: 1020px; border-radius: 68px; background: linear-gradient(160deg, #FBF8F2 0%, #EDE6D8 100%); border: 1px solid #DDD5C5; box-shadow: 0 60px 90px -50px rgba(80,52,8,.55), 0 18px 30px -18px rgba(80,52,8,.3), inset 0 2px 0 #fff; }
+  .screen { position: absolute; left: 16px; top: 52px; width: 434px; height: 940px; border-radius: 49px; background: #fff; box-shadow: 0 0 0 1px #D9D1C1; }
   .speaker { position: absolute; left: 50%; top: 22px; width: 70px; height: 8px; margin-left: -35px; border-radius: 4px; background: #D8D0BF; }
   .status { position: absolute; left: 34px; right: 34px; top: 20px; display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 17px; color: var(--stone); }
   .status .r { display: flex; gap: 10px; align-items: center; }
   .batt { width: 24px; height: 12px; border-radius: 4px; border: 1.6px solid var(--stone); position: relative; } .batt::after { content: ""; position: absolute; left: 2px; top: 2px; bottom: 2px; width: 14px; border-radius: 2px; background: var(--stone); }
-  .panel { position: absolute; left: 830px; top: 0; right: 110px; height: 940px; display: flex; flex-direction: column; justify-content: center; }
+  .panel { position: absolute; left: 830px; top: 0; right: 110px; height: 1080px; display: flex; flex-direction: column; justify-content: center; }
   .eyebrow { font-size: 17px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--ash); }
   h1 { margin: 16px 0 0; font: 300 104px/1.0 "Newsreader", Georgia, serif; letter-spacing: -.03em; text-wrap: balance; }
   h1 em { font-style: italic; font-weight: 400; background: linear-gradient(transparent 64%, var(--band) 64% 92%, transparent 92%); padding: 0 .05em; }
   .sub { margin: 26px 0 0; font-size: 36px; line-height: 1.35; color: var(--stone); max-width: 20em; text-wrap: pretty; }
+  .foot { margin: 22px 0 0; font-size: 24px; color: var(--ash); }
   .flow { display: grid; gap: 10px; margin-top: 40px; max-width: 860px; }
   .box { border-radius: 28px; padding: 22px 30px; border: 1px solid var(--hair); background: #fff; font-size: 34px; font-weight: 600; box-shadow: 0 22px 36px -28px rgba(80,52,8,.4); }
   .box small { display: block; font-weight: 400; color: var(--ash); font-size: 24px; margin-top: 2px; }
@@ -22,13 +23,14 @@
 </style></head><body>
 <div id="phone" class="phone" hidden>
   <div class="speaker"></div>
-  <div class="status"><span id="clock">13:30</span><span class="r" id="icons"><span class="batt"></span></span></div>
+  <div class="status"><span id="clock">08:00</span><span class="r" id="icons"><span class="batt"></span></span></div>
   <div class="screen"></div>
 </div>
 <div class="panel" id="panel">
   <div class="eyebrow" id="eyebrow"></div>
   <h1 id="title"></h1>
   <p class="sub" id="sub"></p>
+  <p class="foot" id="foot"></p>
   <div class="flow" id="flow" hidden>
     <div class="box">A photo, or pasted text<small>the notice, as it arrived</small></div><div class="down">&#8595;</div>
     <div class="box ai">The AI reads it<small>areas and outage times, nothing else</small></div><div class="down">&#8595;</div>
@@ -38,9 +40,9 @@
 <script>
   const q = new URLSearchParams(location.search);
   const set = (id, key, html) => { const el = document.getElementById(id); if (q.get(key)) el.innerHTML = q.get(key); else el.hidden = true; };
-  set("eyebrow", "eyebrow"); set("title", "title"); set("sub", "sub");
+  set("eyebrow", "eyebrow"); set("title", "title"); set("sub", "sub"); set("foot", "foot");
   if (q.get("phone") !== "0") document.getElementById("phone").hidden = false;
-  document.getElementById("clock").textContent = q.get("time") || "13:30";
+  document.getElementById("clock").textContent = q.get("time") || "08:00";
   if (q.get("flow") === "1") document.getElementById("flow").hidden = false;
   if (q.get("airplane") === "1") document.getElementById("icons").insertAdjacentHTML("afterbegin", '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A4741" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15.5v-1.7l-8-5V4.4a1.4 1.4 0 0 0-2.8 0v4.4l-8 5v1.7l8-2.3v4.1l-2 1.5V21l3.4-.9 3.4.9v-1.7l-2-1.5v-4.1l8 2.3Z"/></svg>');
 </script>

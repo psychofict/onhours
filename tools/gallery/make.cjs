@@ -8,7 +8,7 @@ const ROOT = path.resolve(__dirname, "..", "..");
 const OUT = path.join(ROOT, "submission", "gallery");
 const SCENES = process.env.SCENES || "http://localhost:5192";
 const CHROME = process.env.CHROME_BIN || undefined;
-const NAMES = ["01-cover", "02-photo-in", "03-plan-out", "04-says-why", "05-offline", "06-family-chat"];
+const NAMES = ["01-cover", "02-photo-in", "03-plan-out", "04-says-why", "05-what-moved", "06-offline"];
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const browser = await chromium.launch(CHROME ? { executablePath: CHROME } : {});

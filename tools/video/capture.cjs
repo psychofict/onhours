@@ -122,8 +122,8 @@ function hand(page) {
     await page.waitForTimeout(90);
     await page.mouse.up();
   }
-  async function type(selector, text, perChar = 55) {
-    await click(selector);
+  async function type(selector, text, perChar = 55, opts = {}) {
+    await click(selector, opts);
     for (const ch of text) { await page.keyboard.type(ch); await page.waitForTimeout(perChar + Math.random() * 25); }
   }
   async function scrollTo(y, ms = 900) {

@@ -48,6 +48,13 @@
   "gap": 0.5
  },
  {
+  "id": "s2e",
+  "scene": 2,
+  "say": "It copes with a messy picture too. This one is tilted, laid out differently, and writes the times in words. It still reads five areas, and splits the overnight cut at midnight.",
+  "caption": "It copes with a messy picture too. This one is tilted, laid out differently, and writes the times in words. It still reads five areas, and splits the overnight cut at midnight.",
+  "gap": 0.5
+ },
+ {
   "id": "s3a",
   "scene": 3,
   "say": "When a job can't fit, On Hours says why. These beans need five hours in one go, and the longest stretch left is four hours fifteen.",
@@ -69,6 +76,13 @@
   "gap": 0.5
  },
  {
+  "id": "s3d",
+  "scene": 3,
+  "say": "Then the chat sends a revised notice. Paste it, and On Hours shows what moved, and why. The iron shifts to four o'clock, and the beans no longer fit.",
+  "caption": "Then the chat sends a revised notice. Paste it, and OnHours shows what moved, and why. The iron shifts to four o'clock, and the beans no longer fit.",
+  "gap": 0.7
+ },
+ {
   "id": "s4a",
   "scene": 4,
   "say": "And here is the part that matters when the lights go out.",
@@ -85,8 +99,8 @@
  {
   "id": "s4c",
   "scene": 4,
-  "say": "Switch on airplane mode, and reload. It still tells you the power is off until three, and what comes next.",
-  "caption": "Switch on airplane mode, and reload. It still tells you the power is off until three, and what comes next.",
+  "say": "Switch on airplane mode, and reload. It still tells you the power is off until nine, and what comes next.",
+  "caption": "Switch on airplane mode, and reload. It still tells you the power is off until nine, and what comes next.",
   "gap": 1.4
  },
  {
@@ -113,8 +127,8 @@
  {
   "id": "s6m",
   "scene": 6,
-  "say": "In many cities, the schedule only ever arrives as a message. On Hours turns that message into a day someone can actually follow.",
-  "caption": "In many cities, the schedule only ever arrives as a message. OnHours turns that message into a day someone can actually follow.",
+  "say": "Wherever the schedule arrives as a message, On Hours turns it into a day someone can actually follow.",
+  "caption": "Wherever the schedule arrives as a message, OnHours turns it into a day someone can actually follow.",
   "gap": 0.5
  },
  {

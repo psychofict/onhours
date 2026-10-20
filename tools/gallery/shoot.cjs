@@ -10,7 +10,8 @@ const ROOT = path.resolve(__dirname, "..", "..");
 const OUT = path.join(ROOT, "submission", "work", "gallery-src");
 const CHROME = process.env.CHROME_BIN || undefined;
 const PHOTO = path.join(ROOT, "public", "sample-notice.jpg");
-const NOW = "?now=13:30";
+const NOW = "?now=08:00";
+const PHOTO2 = path.join(ROOT, "public", "sample-notice-2.jpg");
 fs.mkdirSync(OUT, { recursive: true });
 
 async function laptop(browser) {
@@ -46,6 +47,24 @@ async function laptop(browser) {
   await page.waitForTimeout(1500);
   await region(["#chart .row-job:last-child", "#misses"], path.join(OUT, "beans-after.png"));
   await page.locator("#plan-card").screenshot({ path: path.join(OUT, "plan-card.png") });
+  // a revised notice arrives: what moved, and why
+  await page.evaluate(() => document.querySelector("#notice-card").scrollIntoView({ behavior: "instant", block: "start" }));
+  await page.click("#tab-text");
+  await page.click("#use-revised");
+  await page.waitForTimeout(300);
+  {
+    // the Text tab and the revised notice in it, without the rest of the card
+    const a = await page.locator("#notice-card .tabs").boundingBox();
+    const b = await page.locator("#notice").boundingBox();
+    const pad = 14, x0 = Math.min(a.x, b.x) - pad, y0 = a.y - pad, x1 = Math.max(a.x + a.width, b.x + b.width) + pad, y1 = b.y + b.height + pad;
+    await page.screenshot({ path: path.join(OUT, "notice-revised.png"), clip: { x: x0, y: y0, width: x1 - x0, height: y1 - y0 } });
+  }
+  await page.click("#read");
+  await page.waitForSelector("#changes-card:not([hidden])", { timeout: 30000 });
+  await page.waitForTimeout(1500);
+  await page.locator("#plan-card").screenshot({ path: path.join(OUT, "plan-card-changed.png") });
+  await page.click("#changes-card .btn");
+  await page.click("#tab-photo").catch(() => {});
   // the plan picture, from the page's own canvas
   await page.evaluate(() => document.getElementById("btn-picture").click());
   await page.waitForSelector("#card-dialog[open]");
@@ -67,6 +86,16 @@ async function phone(browser) {
   await page.evaluate(() => document.getElementById("notice-card").scrollIntoView({ behavior: "instant", block: "start" }));
   await page.waitForTimeout(500);
   await page.screenshot({ path: path.join(OUT, "phone-photo.png") });
+  // a messier photo, read by the same reader
+  await page.click("#photo-sample-2");
+  await page.waitForSelector("#areas label:has-text('Old Quarry')", { timeout: 40000 });
+  await page.waitForTimeout(1500);
+  await page.evaluate(() => document.getElementById("notice-card").scrollIntoView({ behavior: "instant", block: "start" }));
+  await page.waitForTimeout(500);
+  await page.screenshot({ path: path.join(OUT, "phone-photo-2.png") });
+  await page.click("#photo-sample");
+  await page.waitForSelector("#areas label:has-text('Riverside East')", { timeout: 40000 });
+  await page.waitForTimeout(800);
   await page.click("#areas label:has-text('Riverside East')");
   await page.waitForTimeout(500);
   await page.evaluate(() => document.getElementById("area-card").scrollIntoView({ behavior: "instant", block: "start" }));
