@@ -1,6 +1,6 @@
 // OnHours service worker: keeps the page's own files so it opens with no network.
 // It answers from the store first and refreshes the store in the background. It never touches /api/.
-const VERSION = "onhours-v2-1";
+const VERSION = "onhours-v2-2";
 const SHELL = [
   "/", "/index.html", "/styles.css",
   "/app.js", "/draw.js", "/jobs.js", "/jobtext.js", "/now.js", "/planner.js", "/rules.js",

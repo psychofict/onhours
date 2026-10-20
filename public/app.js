@@ -1,13 +1,13 @@
-import { planDay, planToText, formatDuration } from "./planner.js";
+import { planDay, planToText, formatDuration, diffPlans } from "./planner.js";
 import { nowStatus } from "./now.js";
 import { rulesRead } from "./rules.js";
 import { parseJobs } from "./jobtext.js";
-import { SAMPLE_NOTICE, SAMPLE_JOBS, SAMPLE_AREA } from "./sample.js";
+import { SAMPLE_NOTICE, SAMPLE_REVISED_NOTICE, SAMPLE_JOBS, SAMPLE_AREA } from "./sample.js";
 import { createJobsEditor } from "./jobs.js";
 import { wireCopy, wireShare } from "./share.js";
 import { shrinkPhoto } from "./photo.js";
 import { loadHousehold, saveHousehold, forgetHousehold } from "./store.js";
-import { el, icon, renderChart, renderMini, renderNow, renderMisses } from "./draw.js";
+import { el, icon, renderChart, renderMini, renderNow, renderMisses, renderChanges } from "./draw.js";
 
 const $ = (id) => document.getElementById(id);
 const isOnline = () => navigator.onLine && !state.apiDown;
@@ -111,6 +111,8 @@ async function readText() {
 }
 
 function acceptAreas(data) {
+  const before = state.plan;
+  const beforeArea = state.planArea;
   state.areas = data.areas || [];
   const label = data.reader === "ai" ? (data.from === "photo" ? "Read from the photo by AI" : "Read by AI") : "Read by built-in rules";
   if (!state.areas.length) {
@@ -120,12 +122,32 @@ function acceptAreas(data) {
     setNote(`${n} area${n === 1 ? "" : "s"} found.${data.note ? ` ${data.note}` : ""}`, { tag: label });
   }
   fillAreas();
+  // A revised notice for the area already planned: plan again at once and say what moved.
+  if (before && state.area && state.area === beforeArea) {
+    planNow();
+    const diff = diffPlans(before, state.plan);
+    renderChanges($("changes-card"), diff);
+    if (diff.changed) $("plan-live").textContent = `The notice changed. ${diff.items.length} job${diff.items.length === 1 ? "" : "s"} affected.`;
+  } else {
+    renderChanges($("changes-card"), null);
+  }
 }
 
 function showSkeleton() {
   const box = $("areas");
   box.replaceChildren(el("legend", { class: "sr-only", text: "Areas in the notice" }), ...[0, 1, 2].map(() => el("span", { class: "chip skeleton" }, el("span", { text: "…" }))));
   $("area-hint").textContent = "Reading the notice…";
+}
+
+// A new notice that does not hold the chosen area leaves the old plan with nothing to stand on.
+function clearPlan() {
+  if (!state.plan) return;
+  state.plan = null;
+  state.planArea = "";
+  $("plan-body").hidden = true;
+  $("plan-empty").hidden = false;
+  $("plan-area").textContent = "Your day";
+  renderChanges($("changes-card"), null);
 }
 
 // ---- Choosing the area ----
@@ -147,7 +169,7 @@ function fillAreas() {
     box.append(el("label", { class: "chip" }, input, el("span", { text: a.name })));
   }
   if (state.areas.some((a) => a.name === keep)) selectArea(keep, false);
-  else { state.area = ""; showOff(); }
+  else { state.area = ""; showOff(); clearPlan(); }
 }
 
 function selectArea(name, announce = true) {
@@ -216,10 +238,12 @@ function planNow({ scroll = false } = {}) {
     return;
   }
   const first = state.plan === null;
+  const newAreaOrDay = first || state.planArea !== area.name || state.planDay !== state.day;
+  state.planDay = state.day;
   state.plan = planDay({ outages: area.off, jobs: editor.getJobs(), backupMinutes: state.backupMinutes });
   state.planArea = area.name;
   $("copied").textContent = "";
-  drawPlan(!first);
+  drawPlan(!first, newAreaOrDay ? true : "bars");
   if (scroll && window.matchMedia("(max-width: 979px)").matches) {
     $("plan-card").scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" });
   }
@@ -279,6 +303,11 @@ $("use-sample").addEventListener("click", () => {
   setNote("Sample text added. The areas and times in it are fictional. Press Read the notice.");
   $("read").focus();
 });
+$("use-revised").addEventListener("click", () => {
+  $("notice").value = SAMPLE_REVISED_NOTICE;
+  setNote("Revised notice added. Press Read the notice to see what moved.");
+  $("read").focus();
+});
 $("read").addEventListener("click", readText);
 
 // ---- Reading a photo of the notice ----
@@ -288,6 +317,7 @@ function showPhotoAvailability() {
   const off = noReader || offline;
   $("photo-choose").disabled = off;
   $("photo-sample").disabled = off;
+  $("photo-sample-2").disabled = off;
   const p = document.querySelector("#panel-photo .privacy");
   p.textContent = noReader
     ? "Photo reading needs the AI reader, which is switched off in this copy. Use the Text tab: it works with no setup."
@@ -312,7 +342,7 @@ function showPreview(blob) {
 }
 function setReading(on) {
   $("photo-preview").classList.toggle("reading", on);
-  for (const id of ["photo-choose", "photo-sample", "read"]) { $(id).disabled = on || (id !== "read" && (!state.vision || !isOnline())); }
+  for (const id of ["photo-choose", "photo-sample", "photo-sample-2", "read"]) { $(id).disabled = on || (id !== "read" && (!state.vision || !isOnline())); }
   if (on) { showSkeleton(); setNote("Reading the photo…", { kind: "" }); }
 }
 
@@ -355,15 +385,17 @@ $("photo-input").addEventListener("change", (e) => {
   if (file) readPhoto(file);
 });
 $("photo-img").addEventListener("click", () => { if (state.vision) $("photo-input").click(); });
-$("photo-sample").addEventListener("click", async () => {
-  try {
-    const res = await fetch("/sample-notice.jpg");
-    if (!res.ok) throw new Error("missing");
-    readPhoto(await res.blob());
-  } catch {
-    setNote("The sample photo needs a connection. Try the sample text instead.", { kind: "warn" });
-  }
-});
+for (const [id, file] of [["photo-sample", "/sample-notice.jpg"], ["photo-sample-2", "/sample-notice-2.jpg"]]) {
+  $(id).addEventListener("click", async () => {
+    try {
+      const res = await fetch(file);
+      if (!res.ok) throw new Error("missing");
+      readPhoto(await res.blob());
+    } catch {
+      setNote("The sample photo needs a connection. Try the sample text instead.", { kind: "warn" });
+    }
+  });
+}
 
 // ---- The sample day in one tap ----
 function loadSampleDay() {

@@ -21,7 +21,7 @@ test("every file the service worker stores exists", () => {
 
 test("every script, style, font and icon the page needs is in the shell list", () => {
   const stored = new Set(shell);
-  const need = walk(PUBLIC).filter((f) => !["/sw.js", "/sample-notice.jpg"].includes(f) && !f.endsWith(".txt"));
+  const need = walk(PUBLIC).filter((f) => !["/sw.js", "/sample-notice.jpg", "/sample-notice-2.jpg"].includes(f) && !f.endsWith(".txt"));
   for (const f of need) assert.ok(stored.has(f), `${f} is missing from the service worker's shell list`);
 });
 

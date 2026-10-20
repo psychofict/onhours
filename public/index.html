@@ -95,6 +95,7 @@
               </figure>
               <div class="row">
                 <button type="button" class="btn ghost small" id="photo-sample"><svg class="ico" aria-hidden="true"><use href="#i-image"/></svg>Use the sample photo</button>
+                <button type="button" class="btn ghost small" id="photo-sample-2"><svg class="ico" aria-hidden="true"><use href="#i-image"/></svg>Try a messier photo</button>
               </div>
               <p class="privacy">The photo goes to the AI reader to be read. It is not stored.</p>
             </div>
@@ -104,6 +105,7 @@
               <textarea id="notice" rows="8" maxlength="8000" spellcheck="false" placeholder="Group 2 – Riverside East: 05:00-09:00 / 13:00-15:00 …"></textarea>
               <div class="row">
                 <button type="button" class="btn ghost small" id="use-sample">Use the sample text</button>
+                <button type="button" class="btn ghost small" id="use-revised">Use a revised notice</button>
                 <button type="button" class="btn secondary small" id="read">Read the notice</button>
               </div>
             </div>
@@ -185,6 +187,7 @@
 
           <div id="plan-body" hidden>
             <p class="sr-only" id="plan-live" role="status" aria-live="polite"></p>
+            <section class="changes" id="changes-card" aria-labelledby="changes-title" hidden></section>
             <div class="now" id="now-card"></div>
             <div id="chart"></div>
             <div class="misses" id="misses"></div>

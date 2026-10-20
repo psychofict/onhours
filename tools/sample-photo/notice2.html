@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><title>Second sample notice (fictional)</title>
+<style>
+  /* A fictional, messier notice: a printed list taped to a shop window, photographed at an angle, with loose wording and a cut that crosses midnight. Every name is made up. */
+  html,body{margin:0;width:1200px;height:1500px;overflow:hidden}
+  body{background:linear-gradient(160deg,#cfd6d3 0%,#aeb9b6 45%,#8f9c99 100%);font-family:"Geist Mono","DejaVu Sans Mono",monospace;position:relative}
+  .glass{position:absolute;inset:0;background:linear-gradient(115deg,rgba(255,255,255,.34) 0%,rgba(255,255,255,0) 38%,rgba(255,255,255,.18) 60%,rgba(255,255,255,0) 82%);z-index:5;pointer-events:none}
+  .frame{position:absolute;left:0;right:0;top:0;height:46px;background:#6f7774}
+  .sheet{position:absolute;left:170px;top:150px;width:860px;height:1130px;background:#f6f3ea;padding:64px 60px;box-sizing:border-box;
+    transform:perspective(1500px) rotateX(-3deg) rotateY(5deg) rotateZ(2.6deg);box-shadow:0 26px 50px -22px rgba(30,30,25,.6);color:#222}
+  .tape{position:absolute;width:140px;height:50px;background:rgba(236,224,176,.75);box-shadow:0 2px 6px rgba(0,0,0,.2)}
+  .tape.a{left:-34px;top:20px;transform:rotate(-38deg)} .tape.b{right:-30px;bottom:30px;transform:rotate(-34deg)}
+  h1{margin:0 0 6px;font-size:46px;letter-spacing:.04em}
+  .sub{margin:0 0 34px;font-size:26px;color:#4b4a44}
+  .z{margin:0 0 30px;font-size:30px;line-height:1.35}
+  .z b{display:block;font-size:34px;margin-bottom:4px}
+  .fold{position:absolute;left:0;right:0;top:55%;height:3px;background:rgba(0,0,0,.08);box-shadow:0 1px 0 rgba(255,255,255,.7)}
+  .note{margin-top:38px;font-size:24px;color:#4b4a44;line-height:1.4}
+</style></head><body>
+<div class="frame"></div>
+<div class="sheet">
+  <div class="tape a"></div><div class="tape b"></div>
+  <h1>LOAD MANAGEMENT</h1>
+  <p class="sub">STAGE 2 · Wednesday · please share</p>
+  <p class="z"><b>Zone A – Mapleton, Ridgeway Estate</b>off 22:00 to 02:00</p>
+  <p class="z"><b>Zone B – Old Quarry, Station Road</b>4pm–6:30pm, then 11pm till 1am</p>
+  <p class="z"><b>Zone C – Lakeview</b>06:00 - 08:30</p>
+  <p class="z"><b>Zone D – Hospital Hill</b>no scheduled cut</p>
+  <div class="fold"></div>
+  <p class="note">Times can change at short notice.<br>Check again after 18:00.</p>
+</div>
+<div class="glass"></div>
+</body></html>

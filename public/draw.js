@@ -65,9 +65,10 @@ export function legend(withBackup) {
 
 /** One whole day as a row of tracks. `now` is minutes since midnight or null. */
 export function renderChart(root, plan, { now = null, compact = false, animate = true } = {}) {
+  // animate: true draws everything in, "bars" only grows the bars (a live edit), false is still
   root.replaceChildren();
   const len = plan.dayEnd - plan.dayStart;
-  const chart = el("div", { class: `chart${compact ? " example" : ""}${animate ? "" : " still"}` });
+  const chart = el("div", { class: `chart${compact ? " example" : ""}${animate === true ? "" : animate === "bars" ? " live" : " still"}` });
   const inDay = now !== null && now >= plan.dayStart && now < plan.dayEnd ? now : null;
   chart.append(legend(plan.backup.total > 0 || plan.placed.some((p) => p.onBackup.length)));
   chart.append(axisLabels(plan, inDay));
@@ -82,13 +83,16 @@ export function renderChart(root, plan, { now = null, compact = false, animate =
     }
     const name = el("span", { class: "row-name" }, p.job.name);
     if (p.job.must) name.append(el("span", { class: "tag", text: "Must do" }));
+    if (now !== null && p.end <= now) name.append(el("span", { class: "tag done" }, icon("check"), "Done"));
     if (p.onBackup.length) name.append(el("span", { class: "tag backup", text: `On backup ${p.onBackup.map(span).join(", ")}` }));
     rows.append(el("li", { class: "row-job", style: `--i:${i}` },
       el("div", { class: "row-top" }, name, el("span", { class: "row-time", text: span(p) })),
       track(plan, [bar], inDay)));
   });
   chart.append(rows);
-  chart.append(el("p", { class: "chart-off", text: plan.off.length ? `Power off ${plan.off.map(span).join(", ")}` : "No power cuts listed for the day." }));
+  chart.append(plan.off.length
+    ? el("p", { class: "chart-off" }, "Power off ", ...rangeSpans(plan.off.map(span).join(", ")))
+    : el("p", { class: "chart-off", text: "No power cuts listed for the day." }));
   root.append(chart);
 }
 
@@ -135,6 +139,44 @@ export function renderMisses(root, plan, { onTryBackup } = {}) {
     ul.append(li);
   }
   root.append(ul);
+}
+
+// "05:00–09:00, 13:00–15:00" as one unbreakable span per range, with the commas between them.
+function rangeSpans(text) {
+  const out = [];
+  text.split(", ").forEach((r, i) => {
+    if (i) out.push(", ");
+    out.push(el("span", { class: "nowrap", text: r }));
+  });
+  return out;
+}
+
+/** The "notice changed" card: the cuts before and after, and each job that moved or no longer fits. */
+export function renderChanges(root, diff, { onDismiss } = {}) {
+  root.replaceChildren();
+  if (!diff || !diff.changed) { root.hidden = true; return; }
+  root.hidden = false;
+  root.append(
+    el("p", { class: "eyebrow", text: "The notice changed" }),
+    el("h3", { id: "changes-title", text: diff.items.length ? "Here is what moved, and why." : "The cuts changed. Every job stayed where it was." }),
+    diff.cutsChanged
+      ? el("p", { class: "cuts" }, "Power off was ", ...rangeSpans(diff.cutsBefore), ". Now ", ...rangeSpans(diff.cutsAfter), ".")
+      : el("p", { class: "cuts", text: "The cuts are the same, but the jobs were placed differently." }),
+  );
+  if (diff.items.length) {
+    const ul = el("ul");
+    for (const it of diff.items) {
+      const head = it.kind === "moved" ? `${it.from} → ${it.to}`
+        : it.kind === "no-longer-fits" ? "No longer fits"
+        : it.kind === "now-fits" ? `Now fits: ${it.to}`
+        : `${it.from} → ${it.to}`;
+      ul.append(el("li", { class: it.kind === "no-longer-fits" ? "bad" : "" }, el("b", { text: it.job }), el("span", { class: "arrow-line", text: head }), el("span", { class: "why", text: nb(it.reason) })));
+    }
+    root.append(ul);
+  }
+  const b = el("button", { type: "button", class: "btn ghost small" }, "Got it");
+  b.addEventListener("click", () => { root.hidden = true; onDismiss?.(); });
+  root.append(b);
 }
 
 // Keep "2 h" and "30 min" together when a line wraps.

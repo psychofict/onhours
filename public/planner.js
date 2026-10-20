@@ -219,3 +219,54 @@ export function planToText(plan, areaName, dayLabel = "") {
   }
   return lines.join("\n");
 }
+
+const range = (s) => `${toClock(s.start)}–${toClock(s.end)}`;
+const overlaps = (a, b) => a.start < b.end && b.start < a.end;
+const sameSpans = (a, b) => a.length === b.length && a.every((x, i) => x.start === b[i].start && x.end === b[i].end);
+
+/**
+ * What changed between two plans for the same jobs, for when a revised notice arrives.
+ * Jobs are matched by name. Each change carries the plain reason.
+ * @returns {{changed: boolean, cutsBefore: string, cutsAfter: string, cutsChanged: boolean, items: {job: string, kind: "moved"|"no-longer-fits"|"now-fits"|"backup", from: string|null, to: string|null, reason: string}[]}}
+ */
+export function diffPlans(before, after) {
+  const cutsChanged = !sameSpans(before.off, after.off);
+  const items = [];
+  const placedBefore = new Map(before.placed.map((p) => [p.job.name, p]));
+  const placedAfter = new Map(after.placed.map((p) => [p.job.name, p]));
+  const missedAfter = new Map(after.unplaced.map((u) => [u.job.name, u]));
+  const missedBefore = new Set(before.unplaced.map((u) => u.job.name));
+  for (const [name, a] of placedAfter) {
+    const b = placedBefore.get(name);
+    const onBackup = (p) => p.onBackup.map(range).join(", ");
+    if (!b) {
+      // A job that is new to the list was never in the old plan; only one that missed before "now fits".
+      if (missedBefore.has(name)) items.push({ job: name, kind: "now-fits", from: null, to: range(a), reason: "It did not fit before. It does now." });
+      continue;
+    }
+    if (a.start !== b.start || a.end !== b.end) {
+      const hit = after.off.find((o) => overlaps(o, b));
+      let reason;
+      if (hit) reason = `Power is now off ${range(hit)}, which covers its old time.`;
+      else {
+        const taker = after.placed.find((p) => p.job.name !== name && overlaps(p, b));
+        reason = taker ? `${taker.job.name} now takes its old time.` : "Other jobs moved and left it a different gap.";
+      }
+      items.push({ job: name, kind: "moved", from: range(b), to: range(a), reason });
+    } else if (onBackup(a) !== onBackup(b)) {
+      items.push({ job: name, kind: "backup", from: b.onBackup.length ? `on backup ${onBackup(b)}` : "on mains", to: a.onBackup.length ? `on backup ${onBackup(a)}` : "on mains", reason: "The cut it crosses changed." });
+    }
+  }
+  for (const [name, b] of placedBefore) {
+    const miss = missedAfter.get(name);
+    if (miss) items.push({ job: name, kind: "no-longer-fits", from: range(b), to: null, reason: miss.reason });
+  }
+  items.sort((x, y) => x.job.localeCompare(y.job));
+  return {
+    changed: cutsChanged || items.length > 0,
+    cutsChanged,
+    cutsBefore: before.off.length ? before.off.map(range).join(", ") : "none",
+    cutsAfter: after.off.length ? after.off.map(range).join(", ") : "none",
+    items,
+  };
+}

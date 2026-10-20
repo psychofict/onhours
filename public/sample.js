@@ -19,3 +19,9 @@ export const SAMPLE_JOBS = [
 ];
 
 export const SAMPLE_AREA = "Riverside East";
+
+// The same notice after the utility revises Group 2: the afternoon cut now runs to 16:00.
+export const SAMPLE_REVISED_NOTICE = `*UPDATE: POWER SUPPLY NOTICE*
+Group 2 is revised. All other groups are unchanged.
+
+Group 2 – Riverside East, Siding Road: 05:00-09:00 / 13:00-16:00 / 20:00-23:00`;

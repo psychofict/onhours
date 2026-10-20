@@ -150,3 +150,41 @@ test("a short job fits the gap before the afternoon cut, with or without backup"
   }
   assert.equal(planDay({ outages: RIVERSIDE_EAST, jobs, backupMinutes: 60 }).unplaced.length, 0);
 });
+
+import { diffPlans } from "../public/planner.js";
+
+test("a revised notice moves the iron and the beans no longer fit, each with its reason", () => {
+  const revised = [{ start: "05:00", end: "09:00" }, { start: "13:00", end: "16:00" }, { start: "20:00", end: "23:00" }];
+  const before = planDay({ outages: RIVERSIDE_EAST, jobs: SAMPLE_JOBS, backupMinutes: 60 });
+  const after = planDay({ outages: revised, jobs: SAMPLE_JOBS, backupMinutes: 60 });
+  const d = diffPlans(before, after);
+  assert.equal(d.changed, true);
+  assert.equal(d.cutsChanged, true);
+  assert.equal(d.cutsBefore, "05:00–09:00, 13:00–15:00, 20:00–23:00");
+  assert.equal(d.cutsAfter, "05:00–09:00, 13:00–16:00, 20:00–23:00");
+  assert.deepEqual(d.items.map((i) => `${i.job}|${i.kind}|${i.from}|${i.to}`), [
+    "Iron school uniforms|moved|15:00–15:45|16:00–16:45",
+    "Slow-cook the beans|no-longer-fits|15:45–20:45|null",
+  ]);
+  assert.equal(d.items[0].reason, "Power is now off 13:00–16:00, which covers its old time.");
+  assert.match(d.items[1].reason, /Needs 5 h in one go\. Even with 1 h of backup left, the longest run you can cover is 4 h 15 min\./);
+});
+
+test("the same notice twice changes nothing, and a job that now fits is reported", () => {
+  const a = planDay({ outages: RIVERSIDE_EAST, jobs: SAMPLE_JOBS, backupMinutes: 60 });
+  assert.deepEqual(diffPlans(a, planDay({ outages: RIVERSIDE_EAST, jobs: SAMPLE_JOBS, backupMinutes: 60 })), { changed: false, cutsChanged: false, cutsBefore: "05:00–09:00, 13:00–15:00, 20:00–23:00", cutsAfter: "05:00–09:00, 13:00–15:00, 20:00–23:00", items: [] });
+  const noBackup = planDay({ outages: RIVERSIDE_EAST, jobs: SAMPLE_JOBS });
+  const d = diffPlans(noBackup, a);
+  assert.deepEqual(d.items.map((i) => `${i.job}|${i.kind}|${i.to}`), ["Slow-cook the beans|now-fits|15:45–20:45"]);
+});
+
+test("a job that moves because another takes its place says so", () => {
+  const jobs = [{ name: "A", minutes: 60, must: true }, { name: "B", minutes: 60, must: false }];
+  const before = planDay({ outages: [], jobs, dayStart: "08:00", dayEnd: "11:00" });
+  const after = planDay({ outages: [], jobs: [{ name: "C", minutes: 60, must: true }, ...jobs], dayStart: "08:00", dayEnd: "11:00" });
+  const d = diffPlans(before, after);
+  assert.deepEqual(d.items.map((i) => `${i.job}|${i.from}|${i.to}|${i.reason}`), [
+    "A|08:00–09:00|09:00–10:00|C now takes its old time.",
+    "B|09:00–10:00|10:00–11:00|A now takes its old time.",
+  ]);
+});
