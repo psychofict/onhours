@@ -61,10 +61,20 @@ Version 2 of OnHours. Version 1's three slices (a pasted notice becomes a day pl
   Learner check: Press Plan picture, check the jobs and times against the plan, then Add to calendar and see the file's events.
   Commit: `Share the plan as a picture and a calendar file`
 
+- [x] **6. A revised notice shows what moved, and why**
+  Becomes usable: With a plan on the page, paste a revised notice (or press Use a revised notice) and read it. A card, "The notice changed", shows the cuts before and after and each job that moved or no longer fits, with the reason. A second, messier sample photo can also be tried.
+  Why now: Added after three simulated judges read the finished version 2 and agreed that the idea scored lowest and that the earlier "what moved" cut was the most useful missing piece. It reuses the planner, so it is small.
+  PRD ref: `prd.md > When the notice changes`, `prd.md > Reading the notice`
+  Spec ref: `spec.md > Planner (public/planner.js)`, `spec.md > Page (public/index.html, public/app.js, public/draw.js, public/jobs.js, public/styles.css)`, `spec.md > Data Model`
+  Build: `diffPlans()` in `planner.js`; `renderChanges()` in `draw.js`; planning again inside `acceptAreas()` when the chosen area survives; the revised sample notice, the second sample photo and their buttons; the Done tag; button layout on phones.
+  Verify (mechanical): `node --test` passes the `diffPlans` tests (same notice twice gives no change, a longer cut moves the iron, a job that no longer fits keeps the planner's reason, a job that now fits is reported, a job that moves because another takes its place says so); `tools/check-journey.cjs` passes at 1280 and 390 px with the revised notice, the card's text, the announcement and Got it; the messier photo gives its five areas with the right times in the live reader.
+  Learner check: Plan the sample day with 1 hour of backup, then press Use a revised notice and Read the notice. The iron moves to 16:00 and the beans stop fitting, each with a reason.
+  Commit: `Show what moved and why when a revised notice arrives`
+
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 2, the sample day at 1280 and 390 px. Headless pass by the build session: first visit and the planned sample day at both widths, a keyboard-only tab pass (46 stops, every control reachable and focus-visible), no console errors, no horizontal overflow, light background. Feedback acted on: the clock marker crossed the job names, so it now sits inside each track and on the hour axis; class names `job` and `backup` collided between the cards and the legend swatches, so the swatches were renamed; the plan placeholder showed beside the plan until `[hidden]` was made absolute.
-- [ ] Final kick-the-tires exploration and feedback completed
+- [x] Final kick-the-tires exploration and feedback completed — by the build session in a headless browser: `tools/check-journey.cjs` at 1280 and 390 px (every check passes), a keyboard-only tab pass, Lighthouse in three states, the offline reload, and a read of every gallery image and every second picture of the demo film. Three simulated judges then read the entry; their findings are in `submission/JUDGE-SIMULATION.md`.
 
 ## Final Review
 
@@ -72,12 +82,12 @@ Version 2 of OnHours. Version 1's three slices (a pasted notice becomes a day pl
 
 ## Code Tour and App Map
 
-- [ ] Learning activity complete — focused alternative: follow one job from the jobs list to the timeline, through `planDay()`
-- [ ] Optional edit and transfer reflection addressed — not applicable to this build session
-- [ ] `devpost/app-map.html` regenerated from the version 2 code, checked, and shown
+- [x] Learning activity complete — focused alternative: follow one job from the jobs list to the day chart, through `planDay()`
+- [x] Optional edit and transfer reflection addressed — not applicable to this build session
+- [x] `devpost/app-map.html` regenerated from the version 2 code, checked against the source, and shown
 
-Activity and evidence: to be filled in when the build is finished.
-Route and stops: to be filled in when the build is finished.
+Activity and evidence: followed one job through the code and the tests: the jobs editor (`public/jobs.js`) gives `planDay()` its input, the planner scans for the earliest start and spends backup only when a job marked Runs on backup cannot fit on mains (`test/planner.test.js`, "with one hour of backup the beans run across the evening cut"), and `public/draw.js` draws the bar. A second trace, of the photo reader's fallback, found a real fault: the rules read a transcript of a screenshot that was not a notice and invented an area; the fix and its test are under Revisions.
+Route and stops: `public/app.js` (`readPhoto`, `planNow`) → `server/read-notice.js` (`readNoticeImage`, `validateAreas`, `salvageAreas`) → `public/planner.js` (`planDay`, `earliestStart`, `missReason`) → `public/draw.js` (`renderChart`). A reference route, not toured by a learner; it is written up in `devpost/app-map.html`.
 Edit outcome: not applicable.
 Reflection: not applicable.
 Activity mode: focused alternative.
@@ -90,4 +100,6 @@ Activity mode: focused alternative.
 - Slices 4 and 5 were built together: the service worker lists every share file, so the picture and calendar modules had to exist before the offline layer could install. A test now fails if a file in `public/` is missing from the service worker's list.
 - Offline: Chromium's switched-off network does not always flip `navigator.onLine`, and a stopped server looks the same to the page, so the page also counts an unreachable `/api/status` as offline and remembers the last status it saw, to keep the photo and AI messages accurate with no network.
 - The plan picture first printed "on backup" over the time on the same line and cut a job name short; the backup note now sits on its own line and the name gets the width the time leaves.
+- Slice 6 was added on 21 October 2026 after the simulated judges' first round (`submission/JUDGE-SIMULATION.md`). It brings forward what the scope had cut ("what moved when the notice changes"), in a smaller form than the comparison screen the scope imagined: the comparison is made from two plans, so every reason is something the planner can say. A job that is new to the list is not reported as "now fits", because a test showed the card would claim it "did not fit before" when it was never there.
+- The planner's `diffPlans()` first reported a job as "now fits" whenever it was absent from the earlier plan; the rule now needs the job to have been in the earlier Didn't fit list.
 - The sample notice and photo now say "daily schedule" instead of a weekday and date, so the plan's real date (today or tomorrow) never contradicts the notice.

@@ -27,7 +27,7 @@ Calm and practical, like a well-made paper planner on a kitchen table, with the 
 Ebenworks builds AI products for the people who keep the world running: the shop owner, the nurse, the family carer, the contractor, the organiser and the artist. Scheduled power cuts shape the day for millions of them. This is a small, honest test of that idea, and of building it plan first: can a photo of a message become a plan someone would actually follow, even in the dark?
 
 ## What "Working" Looks Like
-Open OnHours on a phone and a laptop. Choose the sample photo of a notice and watch it become six areas with their outage times. Pick Riverside East, keep the sample jobs, and press Plan my day. The ribbon and timeline show each job in a powered stretch; the slow-cooked beans do not fit, with the reason in one line. Set the backup to 1 hour and the beans fit, with a note to switch to the inverter at 20:00. Switch the network off and reload: the plan is still there, with a "Right now" card saying when the power returns. Send the plan as a picture.
+Open OnHours on a phone and a laptop. Choose the sample photo of a notice and watch it become six areas with their outage times. Pick Riverside East, keep the sample jobs, and press Plan my day. The ribbon and timeline show each job in a powered stretch; the slow-cooked beans do not fit, with the reason in one line. Set the backup to 1 hour and the beans fit, with a note to switch to the inverter at 20:00. Switch the network off and reload: the plan is still there, with a "Right now" card saying when the power returns. Send the plan as a picture. Press Use a revised notice and read it: the iron moves to 16:00 and the beans stop fitting, each with a reason.
 
 ## The POC Boundary
 - One installable page that runs from a Node server with no packages, and offline after the first visit.
@@ -37,10 +37,11 @@ Open OnHours on a phone and a laptop. Choose the sample photo of a notice and wa
 - Show the day as a ribbon and timeline, and a Right now card for the moment of the cut.
 - Remember the household on this device only: jobs, area, backup and the last notice.
 - Share: copy as text, a plan picture, a calendar file with reminders.
+- When a revised notice arrives for the chosen area, plan again and show what moved and why (added on 21 October 2026, after the first round of simulated judging; see `checklist.md > Revisions`).
 
 ## Later
 - Several days at once when a notice covers a week.
-- Showing what moved, and why, when a revised notice arrives.
+- Comparing a revised notice for a different area, or keeping a history of earlier notices.
 - Splitting a job that can pause (charging) across two powered stretches.
 - Reading jobs from speech.
 - Sending the plan straight into a chat app.

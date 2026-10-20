@@ -27,7 +27,8 @@ PRD ref: `prd.md > The Core Journey`.
 6. Plan my day: the page calls `planDay({ outages, jobs, backupMinutes })` and gets `{ powered, off, placed, unplaced, skipped, backup }`.
 7. `public/draw.js` draws the Right now card (from `public/now.js`), the ribbon, the timeline and Didn't fit. `public/store.js` saves the household.
 8. Sharing: `public/card.js` draws the plan picture on a canvas, `public/ics.js` builds the calendar file, and `planToText()` builds the message.
-9. Offline: the service worker answers every request for the page's own files from its store, and the page restores the household from browser storage and plans again at once.
+9. A revised notice: when the page reads a notice that still lists the chosen area, `acceptAreas()` plans again with the same jobs and backup, calls `diffPlans(before, after)` and passes the result to `renderChanges()`, which draws the "The notice changed" card above Right now. No new request is made; the comparison is plain code in the page.
+10. Offline: the service worker answers every request for the page's own files from its store, and the page restores the household from browser storage and plans again at once.
 
 ## Stack
 - **Node.js 20 or newer**, no npm packages. Built-in `http`, `fs`, `fetch` and `node:test`. Docs: https://nodejs.org/api/http.html, https://nodejs.org/api/test.html. Why: nothing to install or keep up to date.
@@ -42,6 +43,7 @@ PRD ref: `prd.md > The Core Journey`.
 - To switch the AI reader on, set three variables before starting: `LLM_BASE_URL` (ending in `/v1`), `LLM_API_KEY` and `LLM_MODEL`. To switch photo reading on, also set `LLM_VISION_MODEL` (or set `LLM_VISION=1` to use `LLM_MODEL` for photos). `.env.example` lists them; the server never writes or prints the key, and the browser never receives it.
 - Tests: `node --test`.
 - Demo clock: add `?now=14:20` to the address to set the "Right now" card's clock.
+- Journey check: with the app running, `node tools/check-journey.cjs` walks the whole journey in a headless browser at 1280 and 390 px wide, including the revised notice, offline use and Forget this device (it needs `playwright-core`; see `submission/BUILD-VIDEO.md`).
 - Recording: `submission/BUILD-VIDEO.md` has the commands that record and assemble the demo video from the running app. Deployment is not planned; the video and a public repository are the submission.
 
 ## Look and Feel
@@ -68,7 +70,9 @@ PRD ref: `prd.md > Reading the notice`.
 
 ### Planner (`public/planner.js`)
 `planDay({ outages, jobs, backupMinutes = 0, dayStart = "05:00", dayEnd = "23:00" })`. Works in minutes from midnight. Powered stretches are the day minus merged outages. Jobs are sorted must-do first, then longer first, then list order. For each job it scans minute by minute for the earliest start where the whole job lies in time no other job holds and touches no outage. If there is none, and the job runs on backup, it looks for the earliest such start where the outage minutes inside the job fit in the backup left, and records those minutes as `onBackup`. A job that fits nowhere goes to `unplaced` with a reason. `planToText(plan, areaName)` builds the message.
-PRD ref: `prd.md > Planning the day`, `prd.md > Sharing the plan`.
+
+`diffPlans(before, after)` compares two plans made from the same jobs and returns `{ changed, cutsChanged, cutsBefore, cutsAfter, items }`. Jobs are matched by name. An item is `moved` (different start or end), `no-longer-fits` (placed before, now in `unplaced`, with the planner's own reason), `now-fits` (in `unplaced` before, placed now) or `backup` (same time, different backup minutes). A moved job's reason is "Power is now off X–Y, which covers its old time." when a new cut overlaps its old time, else "<other job> now takes its old time." when another job sits there, else "Other jobs moved and left it a different gap." A job that is new to the list is not reported. Items are sorted by job name so the same two plans always give the same card.
+PRD ref: `prd.md > Planning the day`, `prd.md > When the notice changes`, `prd.md > Sharing the plan`.
 
 ### Right now (`public/now.js`)
 `nowStatus(plan, minute)` returns whether the power is on, until when, the job running, whether it runs on backup, and the next job. A pure function, tested with the sample day at 08:00, 13:30 and 20:30.
@@ -83,8 +87,8 @@ PRD ref: `prd.md > The jobs list`.
 PRD ref: `prd.md > Works with no power and no network`.
 
 ### Page (`public/index.html`, `public/app.js`, `public/draw.js`, `public/jobs.js`, `public/styles.css`)
-`app.js` holds the state and wires the steps; `draw.js` draws the ribbon, timeline, Right now and Didn't fit; `jobs.js` is the jobs editor; `photo.js` shrinks pictures (longest side 1,600 px, JPEG).
-PRD ref: `prd.md > The Core Journey`, `prd.md > Choosing the area and the backup`, `prd.md > The jobs list`.
+`app.js` holds the state and wires the steps; `draw.js` draws the day chart, Right now, Didn't fit and the "notice changed" card (`renderChanges()`, built with `createElement` and `textContent`, never from HTML strings); `jobs.js` is the jobs editor; `photo.js` shrinks pictures (longest side 1,600 px, JPEG). On a plan for today a job whose end has passed carries a "Done" tag. A plan redrawn because the backup or jobs changed animates only its bars; a new area or day draws the whole plan in.
+PRD ref: `prd.md > The Core Journey`, `prd.md > Choosing the area and the backup`, `prd.md > The jobs list`, `prd.md > When the notice changes`.
 
 ### Sharing (`public/share.js`, `public/card.js`, `public/ics.js`)
 Copy plan (with the select-by-hand fallback), the plan picture dialog (canvas at 1,080 x 1,350 px, Share where `navigator.canShare` allows files, otherwise Download), and the calendar file (floating local times, an alarm ten minutes before each job and each outage).
@@ -100,6 +104,7 @@ In the page's memory, with the household also saved in `localStorage` under `onh
 - Job: `{ id, name, minutes, must: boolean, backup: boolean }`.
 - Household: `{ v: 2, notice: string, areas: Area[], area: string, backupMinutes: number, day: "today" | "tomorrow", jobs: Job[] }`. The service worker's store holds only the page's own files.
 - Plan: `{ off, powered, placed: [{ job, start, end, onBackup: [{ start, end }] }], unplaced: [{ job, reason }], skipped, backup: { total, used } }`, times in minutes.
+- Plan change: `{ changed, cutsChanged, cutsBefore, cutsAfter, items: [{ job, kind: "moved" | "no-longer-fits" | "now-fits" | "backup", from, to, reason }] }`, with times as "HH:MM–HH:MM" text. Held in memory only, for the card; it is not saved.
 Leaving and returning restores the household and draws the plan again; Forget this device removes the saved record. Photos are never stored.
 
 ## File Structure
@@ -113,8 +118,8 @@ onhours/
 │   ├── index.html       # the one page
 │   ├── styles.css       # light theme, layout, ribbon, timeline
 │   ├── app.js           # page behaviour and state
-│   ├── draw.js          # ribbon, timeline, Right now, Didn't fit
-│   ├── planner.js       # planDay() and planToText(), shared with the tests
+│   ├── draw.js          # day chart, Right now, Didn't fit, the notice-changed card
+│   ├── planner.js       # planDay(), planToText() and diffPlans(), shared with the tests
 │   ├── now.js           # nowStatus()
 │   ├── rules.js         # built-in notice reader, shared by server and page
 │   ├── jobtext.js       # plain-words job entry
@@ -124,8 +129,9 @@ onhours/
 │   ├── share.js         # copy, plan picture dialog, calendar download
 │   ├── card.js          # draws the plan picture
 │   ├── ics.js           # builds the calendar file
-│   ├── sample.js        # the fictional sample notice and jobs
+│   ├── sample.js        # the fictional sample notice, revised notice and jobs
 │   ├── sample-notice.jpg# the fictional sample photo
+│   ├── sample-notice-2.jpg # a second, messier fictional photo
 │   ├── sw.js            # service worker
 │   ├── manifest.webmanifest
 │   ├── icons/
@@ -157,6 +163,7 @@ onhours/
 - **Jobs never split**: the kernel is "fits in one go". A job on backup bridges an outage but stays one job.
 - **Backup is hours, not watts**: it keeps the planner honest and the screen simple. A real inverter plan would need each appliance's load.
 - **Greedy placement, not a search for the best arrangement**: the same rule every time, easy to explain on screen, and tested. A search could place more jobs, but its answers would be harder to check and to narrate.
+- **"What moved" compares two plans, not two notices**: the comparison is made from plans the planner produced, so every reason is something the planner can state. It handles one chosen area and one revision; it keeps no history of earlier notices.
 - **Browser storage, not accounts**: nothing to sign in to and nothing on a server to protect.
 
 ## Decisions and Open Issues

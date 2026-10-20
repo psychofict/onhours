@@ -61,3 +61,7 @@ Length 2:15 to 2:50, 1920 x 1080, narration by Murf (voice Natalie, style Narrat
 ## Risks
 
 The photo reader depends on the company model gateway. It is checked live before filming, tests cover its reply check and fallback with a stubbed model, and the page says plainly when a photo cannot be read. The offline claim is checked with the browser's network switched off and a reload. Narration is checked against the script with Whisper and a second recogniser, and the product name is spelled for the voice as the Murf note advises.
+
+## Addendum, 21 October 2026: what the first judge round changed
+
+Three simulated judges read the finished entry (`submission/JUDGE-SIMULATION.md`). They agreed that the entry looked finished and that the idea scored lowest. The cut above, "what moved and why", was the piece they named as missing, so it is now built (`checklist.md`, slice 6). It needed no new screen: a card appears above Right now when a revised notice arrives for the chosen area, and it is made by comparing two plans from the planner. A second, messier sample photo was added so the photo reader is shown on something that is not the clean sample. The video table above is the plan as first written; the timings that were filmed are in `submission/video-script.md`.
