@@ -18,14 +18,15 @@ export function createJobsEditor(listEl, { initialJobs = [], onChange = () => {}
     must.checked = Boolean(job.must);
     backup.checked = Boolean(job.backup);
     const remove = el("button", { type: "button", class: "remove", "aria-label": `Remove ${job.name || "this job"}` }, icon("close"));
-    return el("li", { class: "job", "data-id": job.id, role: "group", "aria-label": job.name || "New job" },
-      el("div", { class: "job-top" }, name, remove),
-      el("div", { class: "job-bottom" },
-        el("div", { class: "duration" },
-          el("label", { class: "num" }, hours, el("span", { "aria-hidden": "true", text: "h" })),
-          el("label", { class: "num" }, minutes, el("span", { "aria-hidden": "true", text: "min" }))),
-        el("label", { class: "toggle must" }, must, el("span", {}, icon("check"), "Must do today")),
-        el("label", { class: "toggle backup" }, backup, el("span", {}, icon("check"), "Runs on backup"))));
+    return el("li", { class: "job", "data-id": job.id },
+      el("div", { class: "job-in", role: "group", "aria-label": job.name || "New job" },
+        el("div", { class: "job-top" }, name, remove),
+        el("div", { class: "job-bottom" },
+          el("div", { class: "duration" },
+            el("label", { class: "num" }, hours, el("span", { "aria-hidden": "true", text: "h" })),
+            el("label", { class: "num" }, minutes, el("span", { "aria-hidden": "true", text: "min" }))),
+          el("label", { class: "toggle must" }, must, el("span", {}, icon("check"), "Must do today")),
+          el("label", { class: "toggle backup" }, backup, el("span", {}, icon("check"), "Runs on backup")))));
   }
 
   function render(focusId) {
@@ -44,7 +45,7 @@ export function createJobsEditor(listEl, { initialJobs = [], onChange = () => {}
     job.minutes = hours * 60 + minutes;
     job.must = li.querySelector("[name=must]").checked;
     job.backup = li.querySelector("[name=backup]").checked;
-    li.setAttribute("aria-label", job.name || "New job");
+    li.querySelector(".job-in").setAttribute("aria-label", job.name || "New job");
     li.querySelector(".remove").setAttribute("aria-label", `Remove ${job.name || "this job"}`);
     onChange();
   });

@@ -169,7 +169,8 @@ textarea:focus, input:focus { border-color: var(--blue); outline: none; box-shad
 .words-note { margin: 8px 0 12px; min-height: 20px; font-size: 13.5px; color: var(--ash); }
 .words-note.warn { color: #8A4B05; }
 .jobs { list-style: none; margin: 0 0 14px; padding: 0; display: grid; gap: 10px; }
-.job { padding: 12px; border-radius: 20px; background: #FCFAF5; border: 1px solid var(--hairline); display: grid; gap: 10px; }
+.job { padding: 12px; border-radius: 20px; background: #FCFAF5; border: 1px solid var(--hairline); }
+.job-in { display: grid; gap: 10px; }
 .job-top { display: flex; gap: 8px; align-items: center; }
 .job-top input { height: 46px; padding: 0 14px; font-size: 16px; font-weight: 500; }
 .remove { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; color: var(--ash); cursor: pointer; transition: background-color 0.3s var(--ease), transform 0.4s var(--ease); }
@@ -301,3 +302,7 @@ dialog::backdrop { background: rgba(247, 241, 232, 0.8); }
 }
 .chart.still .row-job, .chart.still .bar { animation: none; }
 .preview img { cursor: pointer; }
+
+/* Keep the opening example's space reserved while the page script draws it, so nothing below jumps. */
+#hero-chart { min-height: 455px; }
+@media (max-width: 639px) { #hero-chart { min-height: 640px; } }
