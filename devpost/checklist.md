@@ -7,61 +7,79 @@ status: approved
 
 Build mode: fast
 
+Version 2 of OnHours. Version 1's three slices (a pasted notice becomes a day plan; the AI reader; the jobs editor and Copy plan) are in the git history up to commit `f82198a`; they are done and this list builds on them.
+
 ## Slices
 
-- [x] **1. A pasted notice becomes a planned day on a timeline**
-  Becomes usable: Paste a notice (or use the sample), read it with the built-in rules, choose an area, press Plan my day, and see the timeline, the plan list and the Didn't fit list for the six sample jobs.
-  Why now: This is the kernel (jobs placed only in unbroken powered stretches, with reasons for misses) plus the shortest real way to feed it, with the scaffold inside it. It works with no key, so a clean checkout runs.
-  PRD ref: `prd.md > The Core Journey` (steps 1-8), `prd.md > Planning the day`, `prd.md > Reading the notice`, `prd.md > Choosing the area`
-  Spec ref: `spec.md > Planner (public/planner.js)`, `spec.md > Rules reader (server/rules.js)`, `spec.md > Server (server/index.js)`, `spec.md > Page (public/index.html, public/app.js, public/styles.css)`, `spec.md > File Structure`
-  Build: package.json, the server with static files and `POST /api/read-notice` (rules only, size limits), `rulesRead()`, `planDay()` and `planToText()`, the sample data, the page with the area picker, outage line, timeline and lists.
-  Verify (mechanical): `node --test` passes the planner and rules tests; curl to `/api/read-notice` with the sample returns Riverside East with three outages and a 20 KB body gets 413; a headless browser run of the journey shows five blocks and one Didn't fit line.
-  Learner check: Open http://localhost:5174, use the sample notice, read it, choose Riverside East, plan, and check every block sits in a yellow stretch and the beans are under Didn't fit.
-  Commit: `Plan a day from a pasted notice`
+- [ ] **1. The planner carries a job across an outage on backup**
+  Becomes usable: Set the backup hours, mark a job Runs on backup, and the sample day shows the slow-cooked beans placed with "On backup 20:00–20:45" instead of under Didn't fit. Text notices are read by rules that now live in the page's own folder.
+  Why now: This is the new idea inside the kernel, and it is plain, testable code. Everything visual in the later slices draws what the planner returns, so its output shape has to be settled first.
+  PRD ref: `prd.md > Planning the day`, `prd.md > Choosing the area and the backup`, `prd.md > The jobs list`
+  Spec ref: `spec.md > Planner (public/planner.js)`, `spec.md > Rules reader (public/rules.js)`, `spec.md > Data Model`
+  Build: Add backup bridging and the `onBackup` spans to `planDay()`, with the new reasons for jobs that do not fit. Move `rules.js` into `public/` and point the server at it. Write the version 2 sample jobs. Add the backup stepper and the Runs on backup switch to the existing page so the behavior can be tried at once.
+  Verify (mechanical): `node --test` passes the new planner tests (the sample day with no backup and with 1 hour, no overlaps, backup never over budget, the same plan twice) and the moved rules tests; the page in a headless browser shows the beans under Didn't fit with no backup and placed with "On backup 20:00–20:45" at 1 hour.
+  Learner check: Open the page, use the sample notice, choose Riverside East, plan, then set the backup to 1 hour and see the beans move from Didn't fit into the day.
+  Commit: `Carry a job across an outage on backup power`
 
-- [x] **2. The AI reader handles loose wording, with the rules as fallback**
-  Becomes usable: With a model configured, "off from 4 in the afternoon until 8pm" is read; without one, or on failure, the rules answer and the note says so.
-  Why now: The riskiest outside dependency, added after the app already works without it.
-  PRD ref: `prd.md > Reading the notice`, `prd.md > States and Boundaries` (AI unavailable)
-  Spec ref: `spec.md > Notice reader (server/read-notice.js)`, `spec.md > External Services and Dependencies`
-  Build: `readNotice()` with the prompt, timeout, reply check and fallback; `/api/status`; the reader note on the page.
-  Verify (mechanical): unit tests of `validateAreas` and of the fallback with an unreachable model; one live read of the sample through the model gives Hillside Extension 02:00–06:00 and 16:00–20:00.
-  Learner check: Read the sample with the AI on and look at Hillside Extension's outages.
-  Commit: `Read notices with an AI model, falling back to rules`
+- [ ] **2. A phone-first redesign with the day ribbon, Right now and plain-words jobs**
+  Becomes usable: The whole flow looks and works like a finished app at 390 px and 1280 px: an opening that shows an example day, the notice, area and backup, jobs, and the plan with a day ribbon, a timeline, a Right now card and honest empty, loading and error states. Jobs can be typed in plain words.
+  Why now: Design decides ties and the video is built from this screen, so the look is settled before the remaining features add to it.
+  PRD ref: `prd.md > The Core Journey`, `prd.md > Screens and Layout`, `prd.md > Look and Feel`, `prd.md > Right now`, `prd.md > The jobs list`, `prd.md > States and Boundaries`
+  Spec ref: `spec.md > Page (public/index.html, public/app.js, public/draw.js, public/jobs.js, public/styles.css)`, `spec.md > Right now (public/now.js)`, `spec.md > Plain-words jobs (public/jobtext.js)`, `spec.md > Look and Feel`
+  Build: Rewrite the page structure and styles to the Oura-based system with Newsreader and Geist; add `draw.js`, `now.js` and `jobtext.js`; add the `?now=` demo clock, live re-planning after the first plan, keyboard and screen-reader support, and the Right now card.
+  Verify (mechanical): `node --test` passes the tests for `nowStatus` (08:00, 13:30, 20:30) and `parseJobs`; screenshots at 1280 and 390 px of the first visit and the planned sample day are opened and read; a keyboard-only pass reaches every control; no console errors; the computed background is light everywhere.
+  Learner check: Open the page on a phone-sized window, run the sample, and say whether the day reads at a glance and whether Right now answers "what do I do next?".
+  Commit: `Rebuild the page phone-first with a day ribbon and a Right now card`
 
-- [x] **3. The jobs list can be edited and the plan copied**
-  Becomes usable: Add, edit and remove jobs; Copy plan puts the message on the clipboard.
-  Why now: Completes the loop for a real household once the plan and the input both work.
-  PRD ref: `prd.md > The jobs list`, `prd.md > Sharing the plan`
-  Spec ref: `spec.md > Page (public/index.html, public/app.js, public/styles.css)`, `spec.md > Planner (public/planner.js)`
-  Build: `public/jobs.js` (the editor and skipped-job notes) and `public/share.js` (Copy plan with the manual fallback), wired into the page.
-  Verify (mechanical): headless browser adds a 30-minute job, plans, finds it placed; Copy plan shows "Copied" and the clipboard text starts with the area title.
-  Learner check: Add "Charge the radio, 30 min", plan, copy, paste into a note.
-  Commit: `Edit jobs and copy the plan`
+- [ ] **3. A photo of the notice becomes the plan**
+  Becomes usable: Choose the sample photo (or any photo of a notice) and the page reads its areas and outage times; with no AI, or on a failure, the page says so plainly and the Text tab still works.
+  Why now: It is the riskiest outside dependency, and the opening of the demo, so it is proved against the real gateway once the page that shows it exists.
+  PRD ref: `prd.md > Reading the notice`, `prd.md > States and Boundaries`
+  Spec ref: `spec.md > Notice reader (server/read-notice.js)`, `spec.md > Server (server/index.js)`, `spec.md > External Services and Dependencies`
+  Build: `readNoticeImage()` with the vision prompt, the reply check and the transcript fallback; the image route with its size limit; `public/photo.js`; the Photo tab with preview, reading state and errors; the sample photo.
+  Verify (mechanical): unit tests with a stub model (good reply, bad reply with a usable transcript, bad reply with none, image too large, model off); one live read of the sample photo through the company gateway returns the six areas with Riverside East's three outages; the key never appears in a response, the page or the log.
+  Learner check: Press Use the sample photo and watch the six areas appear, then pick Riverside East.
+  Commit: `Read a photo of the notice with a vision model, the rules as backup`
+
+- [ ] **4. The page keeps working with no power and no network**
+  Becomes usable: After one visit, add the page to a phone's home screen, stop the server, switch the network off and reload: the household and the plan are still there, text can still be read, and a pill says the page is offline.
+  Why now: It is the claim the product is named for, and the part most likely to behave differently in a real browser than in tests.
+  PRD ref: `prd.md > Works with no power and no network`, `prd.md > States and Boundaries`
+  Spec ref: `spec.md > Saved household (public/store.js)`, `spec.md > Offline layer (public/sw.js, public/manifest.webmanifest, public/icons/)`, `spec.md > Data Model`
+  Build: `store.js`, the offline pill and Forget this device, the service worker, the manifest and icons, rules reading in the page.
+  Verify (mechanical): store tests; in a headless browser, load the page, wait for the service worker, switch the network off, reload, and confirm the plan and Right now draw with no failed requests for the page's files; Lighthouse accessibility, best practices and SEO at or above 90.
+  Learner check: Plan the sample day, switch on airplane mode, reload the page, and see the same plan.
+  Commit: `Keep the page working offline and remember the household on this device`
+
+- [ ] **5. The plan leaves the app as a picture and a calendar file**
+  Becomes usable: From a finished plan, open a plan picture to share or download, and download a calendar file whose events and ten-minute reminders match the plan.
+  Why now: It closes the loop with the family chat, which is where the notice came from, and it is the last feature the video shows.
+  PRD ref: `prd.md > Sharing the plan`
+  Spec ref: `spec.md > Sharing (public/share.js, public/card.js, public/ics.js)`
+  Build: `card.js` (canvas drawing), the dialog in `share.js`, `ics.js` with the alarms, and the buttons on the plan.
+  Verify (mechanical): `ics.js` tests (times, escaping, alarms, the chosen day); in a headless browser the dialog opens, the picture's pixel size is 1,080 x 1,350, and the downloaded file parses; the picture is opened and read.
+  Learner check: Press Plan picture, check the jobs and times against the plan, then Add to calendar and see the file's events.
+  Commit: `Share the plan as a picture and a calendar file`
 
 ## Hands-on Checkpoints
 
-- [x] Early usable behavior explored — after slice 1, the sample day on screen at 1280 and 390 px wide. Feedback: short blocks clipped their names on a phone and "2 h" wrapped; fixed with a single-line short block and non-breaking durations.
-- [x] Final kick-the-tires exploration and feedback completed — the full journey run at 1280 and 390 px, with an added job, an empty job row, a different area (Kopje Heights) and Copy plan. Feedback: job names were cut off in the editor; fixed with a two-row job card.
+- [ ] Early usable behavior explored — after slice 2, the sample day at 1280 and 390 px
+- [ ] Final kick-the-tires exploration and feedback completed
 
 ## Final Review
 
-- [x] Job names fully visible in the editor at both widths (two-row job card), verified by screenshot
-- [x] Final review complete — feedback resolved and learner confirms ready to ship
+- [ ] Final review complete — feedback resolved and learner confirms ready to ship
 
 ## Code Tour and App Map
 
-- [x] Learning activity complete — focused alternative: the spec's open question (does a small model return the JSON shape reliably?) was answered with a live read and the fallback tests
-- [x] Optional edit and transfer reflection addressed — not applicable; covered by the practice note in the app map
-- [x] `devpost/app-map.html` generated from finished code, checked, and shown, including a project-grounded practice to reuse
+- [ ] Learning activity complete — focused alternative: follow one job from the jobs list to the timeline, through `planDay()`
+- [ ] Optional edit and transfer reflection addressed — not applicable to this build session
+- [ ] `devpost/app-map.html` regenerated from the version 2 code, checked, and shown
 
-Activity and evidence: live AI read of the sample notice (all six areas, Hillside Extension 02:00–06:00 and 16:00–20:00); `test/read-notice.test.js` covers the reply check and the fallback.
-Route and stops: reference route only, listed in the app map (`public/app.js` readNotice/plan, `server/read-notice.js` readNotice/validateAreas, `public/planner.js` planDay).
+Activity and evidence: to be filled in when the build is finished.
+Route and stops: to be filled in when the build is finished.
 Edit outcome: not applicable.
 Reflection: not applicable.
 Activity mode: focused alternative.
 
 ## Revisions
-
-- Merged the first two planned slices (sample day on a timeline; rules reader and area picker) into one — the page could not be tried end to end without a way to read the notice, and the kernel is only meaningful on real outage times. The jobs editor and Copy plan moved into their own modules (`public/jobs.js`, `public/share.js`) so the last slice adds them without rewriting the page script.
-- Verified the AI reader live on 16 Oct 2026 with a small model (gpt-oss-20b) through the team's OpenAI-compatible gateway: the sample notice read in 1.5 s, all six areas correct, Hillside Extension 02:00–06:00 and 16:00–20:00 (the rules read only 02:00–06:00). One call cost US$0.0002.
