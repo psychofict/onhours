@@ -20,4 +20,5 @@ CLAUDE.local.md
 
 # Browser tool scratch
 /.playwright-cli/
+.playwright-cli/
 /submission/work/

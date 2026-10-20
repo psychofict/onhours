@@ -72,7 +72,7 @@ The tests cover the planner (the sample day to the minute, no overlaps, no job i
 
 Fonts: Newsreader and Geist, under the SIL Open Font License (`public/fonts/`).
 
-With the app running, `node tools/check-journey.cjs` walks the whole journey in a headless browser at 1280 and 390 pixels wide (it needs `playwright-core`; see `submission/BUILD-VIDEO.md`).
+With the app running, `node tools/check-journey.cjs` walks the whole journey in a headless browser at 1280 and 390 pixels wide, and `node tools/check-acceptance.cjs` checks every acceptance line of the product requirements, including with the AI reader off, failing and offline. Both need `playwright-core`; see `submission/BUILD-VIDEO.md`.
 
 ## How it was built
 

@@ -74,7 +74,7 @@ Version 2 of OnHours. Version 1's three slices (a pasted notice becomes a day pl
 ## Hands-on Checkpoints
 
 - [x] Early usable behavior explored — after slice 2, the sample day at 1280 and 390 px. Headless pass by the build session: first visit and the planned sample day at both widths, a keyboard-only tab pass (46 stops, every control reachable and focus-visible), no console errors, no horizontal overflow, light background. Feedback acted on: the clock marker crossed the job names, so it now sits inside each track and on the hour axis; class names `job` and `backup` collided between the cards and the legend swatches, so the swatches were renamed; the plan placeholder showed beside the plan until `[hidden]` was made absolute.
-- [x] Final kick-the-tires exploration and feedback completed — by the build session in a headless browser: `tools/check-journey.cjs` at 1280 and 390 px (every check passes), a keyboard-only tab pass, Lighthouse in three states, the offline reload, and a read of every gallery image and every second picture of the demo film. Three simulated judges then read the entry; their findings are in `submission/JUDGE-SIMULATION.md`.
+- [x] Final kick-the-tires exploration and feedback completed — by the build session in a headless browser: `tools/check-journey.cjs` at 1280 and 390 px (every check passes), `tools/check-acceptance.cjs` (every acceptance line of `prd.md` passes, and the PRD's boxes are ticked from it), a keyboard-only tab pass, Lighthouse in three states, the offline reload, and a read of every gallery image and every second picture of the demo film. Three simulated judges then read the entry; their findings are in `submission/JUDGE-SIMULATION.md`.
 
 ## Final Review
 

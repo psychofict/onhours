@@ -43,6 +43,7 @@ PRD ref: `prd.md > The Core Journey`.
 - To switch the AI reader on, set three variables before starting: `LLM_BASE_URL` (ending in `/v1`), `LLM_API_KEY` and `LLM_MODEL`. To switch photo reading on, also set `LLM_VISION_MODEL` (or set `LLM_VISION=1` to use `LLM_MODEL` for photos). `.env.example` lists them; the server never writes or prints the key, and the browser never receives it.
 - Tests: `node --test`.
 - Demo clock: add `?now=14:20` to the address to set the "Right now" card's clock.
+- Acceptance check: `node tools/check-acceptance.cjs` tests every acceptance line of `prd.md` against the page, including with the AI reader off (it starts a second copy with no key on port 5199), failing and offline.
 - Journey check: with the app running, `node tools/check-journey.cjs` walks the whole journey in a headless browser at 1280 and 390 px wide, including the revised notice, offline use and Forget this device (it needs `playwright-core`; see `submission/BUILD-VIDEO.md`).
 - Recording: `submission/BUILD-VIDEO.md` has the commands that record and assemble the demo video from the running app. Deployment is not planned; the video and a public repository are the submission.
 
