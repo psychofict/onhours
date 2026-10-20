@@ -4,11 +4,13 @@ import { rulesRead } from "./rules.js";
 import { parseJobs } from "./jobtext.js";
 import { SAMPLE_NOTICE, SAMPLE_JOBS, SAMPLE_AREA } from "./sample.js";
 import { createJobsEditor } from "./jobs.js";
-import { wireCopy } from "./share.js";
+import { wireCopy, wireShare } from "./share.js";
 import { shrinkPhoto } from "./photo.js";
+import { loadHousehold, saveHousehold, forgetHousehold } from "./store.js";
 import { el, icon, renderChart, renderMini, renderNow, renderMisses } from "./draw.js";
 
 const $ = (id) => document.getElementById(id);
+const isOnline = () => navigator.onLine && !state.apiDown;
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const state = {
@@ -19,6 +21,7 @@ const state = {
   day: "today",
   ai: false,
   vision: false,
+  apiDown: false, // the server could not be reached, so photo reading and the AI reader are off for now
   plan: null,
   planArea: "",
 };
@@ -92,14 +95,14 @@ async function readText() {
   showSkeleton();
   try {
     let data = null;
-    if (state.ai && navigator.onLine) {
+    if (state.ai && isOnline()) {
       try {
         const res = await fetch("/api/read-notice", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ text }) });
         if (res.ok) data = await res.json();
         else if (res.status === 413 || res.status === 400) { const j = await res.json().catch(() => ({})); setNote(j.error || "That notice is too long.", { kind: "warn" }); fillAreas(); return; }
       } catch { /* fall through to the rules in the page */ }
     }
-    if (!data) data = { areas: rulesRead(text), reader: "rules", note: state.ai && navigator.onLine ? "The AI reader was unavailable, so the built-in rules read it." : "" };
+    if (!data) data = { areas: rulesRead(text), reader: "rules", note: state.ai && isOnline() ? "The AI reader was unavailable, so the built-in rules read it." : "" };
     acceptAreas(data);
   } finally {
     btn.removeAttribute("aria-busy");
@@ -179,9 +182,14 @@ $("backup-minus").addEventListener("click", () => setBackup(state.backupMinutes 
 $("backup-plus").addEventListener("click", () => setBackup(state.backupMinutes + 30));
 
 // ---- Today or tomorrow ----
-function dayLabel(offset) {
+function dayDate(day) {
   const d = new Date();
-  d.setDate(d.getDate() + offset);
+  d.setHours(0, 0, 0, 0);
+  if (day === "tomorrow") d.setDate(d.getDate() + 1);
+  return d;
+}
+function dayLabel(offset) {
+  const d = dayDate(offset === 1 || offset === "tomorrow" ? "tomorrow" : "today");
   return d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" });
 }
 function setDay(day, announce = true) {
@@ -237,8 +245,29 @@ function drawPlan(announce = false, animate = true) {
   }
 }
 
-// Once there is a plan, it follows every change.
-function changed() { if (state.plan) planNow(); }
+// Once there is a plan, it follows every change, and every change is saved on this device.
+function changed() {
+  if (state.plan) planNow();
+  scheduleSave();
+}
+
+let saveTimer = null;
+let storageBlocked = false;
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    const ok = saveHousehold({
+      notice: $("notice").value,
+      areas: state.areas,
+      area: state.area,
+      backupMinutes: state.backupMinutes,
+      day: state.day,
+      jobs: editor.getJobs(),
+    });
+    if (!ok && !storageBlocked) { storageBlocked = true; $("forget-note").textContent = "This browser won't save your household."; }
+  }, 250);
+}
+$("notice").addEventListener("input", scheduleSave);
 
 setInterval(() => { if (state.plan && state.day === "today" && !clockOverride) drawPlan(false, false); }, 30000);
 
@@ -254,13 +283,17 @@ $("read").addEventListener("click", readText);
 
 // ---- Reading a photo of the notice ----
 function showPhotoAvailability() {
-  const off = !state.vision;
+  const noReader = !state.vision;
+  const offline = !isOnline();
+  const off = noReader || offline;
   $("photo-choose").disabled = off;
   $("photo-sample").disabled = off;
   const p = document.querySelector("#panel-photo .privacy");
-  p.textContent = off
+  p.textContent = noReader
     ? "Photo reading needs the AI reader, which is switched off in this copy. Use the Text tab: it works with no setup."
-    : "The photo goes to the AI reader to be read. It is not stored.";
+    : offline
+      ? "Photo reading needs a connection. The Text tab works offline."
+      : "The photo goes to the AI reader to be read. It is not stored.";
 }
 
 const PHOTO_PROBLEMS = {
@@ -279,12 +312,12 @@ function showPreview(blob) {
 }
 function setReading(on) {
   $("photo-preview").classList.toggle("reading", on);
-  for (const id of ["photo-choose", "photo-sample", "read"]) { $(id).disabled = on || (id !== "read" && !state.vision); }
+  for (const id of ["photo-choose", "photo-sample", "read"]) { $(id).disabled = on || (id !== "read" && (!state.vision || !isOnline())); }
   if (on) { showSkeleton(); setNote("Reading the photo…", { kind: "" }); }
 }
 
 async function readPhoto(blob) {
-  if (!navigator.onLine) { setNote("Photo reading needs a connection. The Text tab works offline.", { kind: "warn" }); return; }
+  if (!isOnline()) { setNote("Photo reading needs a connection. The Text tab works offline.", { kind: "warn" }); return; }
   let dataUrl;
   try {
     dataUrl = await shrinkPhoto(blob);
@@ -361,21 +394,91 @@ $("hero-photo").addEventListener("click", () => {
 async function showStatus() {
   try {
     const res = await fetch("/api/status");
-    const s = await res.json();
-    state.ai = Boolean(s.ai);
-    state.vision = Boolean(s.vision);
-  } catch { /* keep the defaults */ }
+    const st = await res.json();
+    state.ai = Boolean(st.ai);
+    state.vision = Boolean(st.vision);
+    state.apiDown = false;
+    try { localStorage.setItem("onhours.status", JSON.stringify({ ai: state.ai, vision: state.vision })); } catch { /* not saved */ }
+  } catch {
+    // No network, or the server is not running: keep what the last visit learned.
+    state.apiDown = true;
+    try { const last = JSON.parse(localStorage.getItem("onhours.status") || "{}"); state.ai = Boolean(last.ai); state.vision = Boolean(last.vision); } catch { /* keep the defaults */ }
+  }
+  showConnection();
+}
+
+// ---- Online or not ----
+function showConnection() {
+  const online = isOnline();
+  $("net-pill").hidden = online;
   const pill = $("ai-pill");
+  pill.hidden = !online;
   pill.textContent = state.ai ? "AI reader on" : "Built-in rules only";
   pill.classList.toggle("on", state.ai);
   pill.classList.toggle("soft", !state.ai);
   showPhotoAvailability();
 }
+window.addEventListener("offline", () => { state.apiDown = true; showConnection(); });
+window.addEventListener("online", () => { showStatus(); });
+
+// ---- Coming back: restore the household saved on this device ----
+function restore() {
+  const saved = loadHousehold();
+  if (!saved) return false;
+  editor.setJobs(saved.jobs);
+  $("notice").value = saved.notice;
+  state.areas = saved.areas;
+  fillAreas();
+  setBackup(saved.backupMinutes, false);
+  setDay(saved.day, false);
+  if (saved.area && state.areas.some((a) => a.name === saved.area)) {
+    selectArea(saved.area, false);
+    planNow();
+  }
+  if (state.areas.length) setNote("Welcome back. Your jobs and your last notice are saved on this device.", { tag: "Saved" });
+  if (saved.notice && !state.areas.length) setTab("text");
+  return true;
+}
+
+// ---- Forget this device ----
+$("forget").addEventListener("click", () => {
+  clearTimeout(saveTimer);
+  forgetHousehold();
+  state.areas = [];
+  state.area = "";
+  state.plan = null;
+  state.planArea = "";
+  $("notice").value = "";
+  $("photo-preview").hidden = true;
+  $("photo-choose").hidden = false;
+  editor.setJobs(SAMPLE_JOBS);
+  fillAreas();
+  setBackup(0, false);
+  setDay("today", false);
+  setTab("photo");
+  $("plan-body").hidden = true;
+  $("plan-empty").hidden = false;
+  $("plan-area").textContent = "Your day";
+  setNote("");
+  $("words-note").textContent = "";
+  $("plan-note").textContent = "";
+  $("forget-note").textContent = "Done. This device no longer holds your household.";
+});
 
 // ---- Wiring the rest ----
 wireCopy($("copy"), $("copied"), $("plan-text"), () => (state.plan ? planToText(state.plan, state.planArea, dayLabel(state.day === "today" ? 0 : 1)) : ""));
+wireShare({
+  pictureBtn: $("btn-picture"), icsBtn: $("btn-ics"), dialog: $("card-dialog"), canvas: $("card-canvas"),
+  shareBtn: $("card-share"), downloadBtn: $("card-download"), statusEl: $("copied"),
+  get: () => (state.plan ? { plan: state.plan, areaName: state.planArea, dayLabel: dayLabel(state.day), date: dayDate(state.day) } : null),
+});
 setBackup(0, false);
 setDay("today", false);
 setTab("photo");
-showPhotoAvailability();
+restore();
+showConnection();
 showStatus();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("/sw.js").catch(() => { /* the page still works online */ }); });
+}

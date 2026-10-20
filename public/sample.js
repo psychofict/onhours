@@ -1,7 +1,7 @@
 // Fictional sample data. The areas, groups and jobs are made up for the demo.
 
 export const SAMPLE_NOTICE = `*POWER SUPPLY NOTICE*
-Planned load management for Thursday 22 October. Please plan accordingly.
+Planned load management, daily schedule. Please plan accordingly.
 
 Group 1 – Kopje Heights, Mbizi Park: 06:00 - 10:00 and 18:00 - 22:00
 Group 2 – Riverside East, Siding Road: 05:00-09:00 / 13:00-15:00 / 20:00-23:00

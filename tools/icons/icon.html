@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8"><title>OnHours icon</title>
+<style>html,body{margin:0;background:transparent}#i{display:block}</style>
+<!-- Renders public/icons/icon.svg at the size in ?size= ; ?mask=1 adds the safe-zone padding a maskable icon needs. -->
+<div id="host"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const size = Number(q.get("size") || 512), mask = q.get("mask") === "1";
+const host = document.getElementById("host");
+host.style.cssText = `width:${size}px;height:${size}px;background:#F7F1E8;display:grid;place-items:center;overflow:hidden`;
+const img = new Image();
+img.id = "i";
+img.src = "/icon.svg";
+img.width = img.height = Math.round(size * (mask ? 0.72 : 0.92));
+
+host.append(img);
+</script>

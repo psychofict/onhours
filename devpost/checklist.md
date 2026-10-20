@@ -41,7 +41,7 @@ Version 2 of OnHours. Version 1's three slices (a pasted notice becomes a day pl
   Learner check: Press Use the sample photo and watch the six areas appear, then pick Riverside East.
   Commit: `Read a photo of the notice with a vision model, the rules as backup`
 
-- [ ] **4. The page keeps working with no power and no network**
+- [x] **4. The page keeps working with no power and no network**
   Becomes usable: After one visit, add the page to a phone's home screen, stop the server, switch the network off and reload: the household and the plan are still there, text can still be read, and a pill says the page is offline.
   Why now: It is the claim the product is named for, and the part most likely to behave differently in a real browser than in tests.
   PRD ref: `prd.md > Works with no power and no network`, `prd.md > States and Boundaries`
@@ -51,7 +51,7 @@ Version 2 of OnHours. Version 1's three slices (a pasted notice becomes a day pl
   Learner check: Plan the sample day, switch on airplane mode, reload the page, and see the same plan.
   Commit: `Keep the page working offline and remember the household on this device`
 
-- [ ] **5. The plan leaves the app as a picture and a calendar file**
+- [x] **5. The plan leaves the app as a picture and a calendar file**
   Becomes usable: From a finished plan, open a plan picture to share or download, and download a calendar file whose events and ten-minute reminders match the plan.
   Why now: It closes the loop with the family chat, which is where the notice came from, and it is the last feature the video shows.
   PRD ref: `prd.md > Sharing the plan`
@@ -87,3 +87,7 @@ Activity mode: focused alternative.
 - Slice 1 placed jobs by a plain earliest-start rule and no search: an arrangement search was considered, to let backup rescue a job by reordering the others, and dropped because the sample day needed none and a fixed rule is easier to check and to explain on screen.
 - The planner scans every minute for the earliest start, not a five-minute grid, so jobs begin exactly when the job before ends or an outage ends; `spec.md > Planner` says so.
 - Slice 3: the first live photo reads through the company gateway returned all six areas in about 3 seconds. Eight reads of the sample photo in a row were all six areas right (2.6 to 3.4 seconds each) once the prompt put "areas" before "transcript" and told the model to use single spaces. Before that change one read in four ran 17 seconds and came back cut off, because the model filled its transcript with endless padding spaces; the page now also takes the finished areas out of a cut-off reply and checks them like any other. A rotated, noisy copy of the photo gave the right times for all six areas in three reads but one name misread as "Kopie Heights" every time, which is why the page tells the person to check the names against the notice. A screenshot of the app itself gave no areas, and the first version of the fallback then read its transcript and invented one, so a reply that passes the check as "no outage times" is now trusted and never re-read by the rules.
+- Slices 4 and 5 were built together: the service worker lists every share file, so the picture and calendar modules had to exist before the offline layer could install. A test now fails if a file in `public/` is missing from the service worker's list.
+- Offline: Chromium's switched-off network does not always flip `navigator.onLine`, and a stopped server looks the same to the page, so the page also counts an unreachable `/api/status` as offline and remembers the last status it saw, to keep the photo and AI messages accurate with no network.
+- The plan picture first printed "on backup" over the time on the same line and cut a job name short; the backup note now sits on its own line and the name gets the width the time leaves.
+- The sample notice and photo now say "daily schedule" instead of a weekday and date, so the plan's real date (today or tomorrow) never contradicts the notice.

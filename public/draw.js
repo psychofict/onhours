@@ -35,7 +35,7 @@ function axisLabels(plan, now = null) {
   const len = plan.dayEnd - plan.dayStart;
   const axis = el("div", { class: "axis", "aria-hidden": "true" });
   for (let h = Math.ceil(plan.dayStart / 180) * 180; h <= plan.dayEnd; h += 180) {
-    if (now !== null && Math.abs(h - now) < 45) continue; // leave room for the clock marker
+    if (now !== null && Math.abs(h - now) < 100) continue; // leave room for the clock marker
     axis.append(el("span", { text: toClock(h).slice(0, 2), style: `left:${pct((h - plan.dayStart) / len)}` }));
   }
   if (now !== null) axis.append(el("span", { class: "axis-now", text: toClock(now), style: `left:${pct((now - plan.dayStart) / len)}` }));
