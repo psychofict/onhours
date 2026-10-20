@@ -1,0 +1,134 @@
+[
+ {
+  "id": "s1a",
+  "scene": 1,
+  "say": "Every few days, a photo like this lands in the street group chat.",
+  "caption": "Every few days, a photo like this lands in the street group chat."
+ },
+ {
+  "id": "s1b",
+  "scene": 1,
+  "say": "Tomorrow's power cuts. And everyone does the same sum in their head.",
+  "caption": "Tomorrow's power cuts. And everyone does the same sum in their head.",
+  "gap": 0.45
+ },
+ {
+  "id": "s1c",
+  "scene": 1,
+  "say": "When is my area off? And what can I still get done?",
+  "caption": "When is my area off? And what can I still get done?",
+  "gap": 0.45
+ },
+ {
+  "id": "s2a",
+  "scene": 2,
+  "say": "This is On Hours. Take a photo of the notice, and it reads every area, with its power cuts.",
+  "caption": "This is OnHours. Take a photo of the notice, and it reads every area, with its power cuts.",
+  "gap": 0.5
+ },
+ {
+  "id": "s2b",
+  "scene": 2,
+  "say": "Choose yours. Keep your jobs, or type new ones in plain words. Then plan the day.",
+  "caption": "Choose yours. Keep your jobs, or type new ones in plain words. Then plan the day.",
+  "gap": 0.5
+ },
+ {
+  "id": "s2c",
+  "scene": 2,
+  "say": "Every job gets one unbroken stretch when the power is on. Nothing starts, and then loses power halfway through.",
+  "caption": "Every job gets one unbroken stretch when the power is on. Nothing starts, and then loses power halfway through.",
+  "gap": 1.0
+ },
+ {
+  "id": "s2d",
+  "scene": 2,
+  "say": "The AI only reads the notice. Plain, tested code places every job, so the same notice always gives the same plan.",
+  "caption": "The AI only reads the notice. Plain, tested code places every job, so the same notice always gives the same plan.",
+  "gap": 0.5
+ },
+ {
+  "id": "s3a",
+  "scene": 3,
+  "say": "When a job can't fit, On Hours says why. These beans need five hours in one go, and the longest stretch left is four hours fifteen.",
+  "caption": "When a job can't fit, OnHours says why. These beans need five hours in one go, and the longest stretch left is four hours fifteen.",
+  "gap": 1.4
+ },
+ {
+  "id": "s3b",
+  "scene": 3,
+  "say": "If you have an inverter, say how long it runs. Now the beans fit, and the plan tells you when to switch: eight o'clock, for the last forty-five minutes.",
+  "caption": "If you have an inverter, say how long it runs. Now the beans fit, and the plan tells you when to switch: eight o'clock, for the last forty-five minutes.",
+  "gap": 0.9
+ },
+ {
+  "id": "s3c",
+  "scene": 3,
+  "say": "Backup is just one number: the hours it runs. Nothing to calculate.",
+  "caption": "Backup is just one number: the hours it runs. Nothing to calculate.",
+  "gap": 0.5
+ },
+ {
+  "id": "s4a",
+  "scene": 4,
+  "say": "And here is the part that matters when the lights go out.",
+  "caption": "And here is the part that matters when the lights go out.",
+  "gap": 1.8
+ },
+ {
+  "id": "s4b",
+  "scene": 4,
+  "say": "On Hours installs on the phone. Next time you open it, your jobs and your plan are already there.",
+  "caption": "OnHours installs on the phone. Next time you open it, your jobs and your plan are already there.",
+  "gap": 0.5
+ },
+ {
+  "id": "s4c",
+  "scene": 4,
+  "say": "Switch on airplane mode, and reload. It still tells you the power is off until three, and what comes next.",
+  "caption": "Switch on airplane mode, and reload. It still tells you the power is off until three, and what comes next.",
+  "gap": 1.4
+ },
+ {
+  "id": "s4d",
+  "scene": 4,
+  "say": "Your jobs and your last notice stay on the phone. There is no account, and nothing is tracked.",
+  "caption": "Your jobs and your last notice stay on the phone. There is no account, and nothing is tracked.",
+  "gap": 2.0
+ },
+ {
+  "id": "s5a",
+  "scene": 5,
+  "say": "Send the plan to the family chat as a picture, or add it to your calendar, with a reminder ten minutes before every cut.",
+  "caption": "Send the plan to the family chat as a picture, or add it to your calendar, with a reminder ten minutes before every cut.",
+  "gap": 1.6
+ },
+ {
+  "id": "s6a",
+  "scene": 6,
+  "say": "It is for anyone who runs a home, or a small business, around scheduled power cuts. The tailor, the baker, the family with a water pump.",
+  "caption": "It is for anyone who runs a home, or a small business, around scheduled power cuts. The tailor, the baker, the family with a water pump.",
+  "gap": 1.5
+ },
+ {
+  "id": "s6m",
+  "scene": 6,
+  "say": "In many cities, the schedule only ever arrives as a message. On Hours turns that message into a day someone can actually follow.",
+  "caption": "In many cities, the schedule only ever arrives as a message. OnHours turns that message into a day someone can actually follow.",
+  "gap": 0.5
+ },
+ {
+  "id": "s6b",
+  "scene": 6,
+  "say": "We built it plan first, with the Dev Post skill pack: scope, requirements, spec, then code. It taught us to give the AI one small job, and to keep every decision in code you can test.",
+  "caption": "We built it plan first, with the Devpost skill pack: scope, requirements, spec, then code. It taught us to give the AI one small job, and to keep every decision in code you can test.",
+  "gap": 0.6
+ },
+ {
+  "id": "s6c",
+  "scene": 6,
+  "say": "On Hours. Plan your day around the power cuts.",
+  "caption": "OnHours. Plan your day around the power cuts.",
+  "gap": 1.0
+ }
+]

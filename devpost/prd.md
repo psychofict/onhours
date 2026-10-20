@@ -64,7 +64,7 @@ Carried from `scope.md > Inspiration & Identity`. Warm paper page (`#F7F1E8`), w
 - A job that does not fit is listed with its reason. With no backup: "Needs 5 h in one go; the longest powered stretch left is 4 h 15 min." A job that could run on backup says so: "This job can run on backup. Set your backup hours to try it." With backup set but still not enough: "Needs 5 h in one go. Even with 30 min of backup left, the longest run you can cover is 4 h 45 min."
 - Once a plan has been made, it updates by itself as the area, backup or jobs change, and the change is announced to screen readers.
 - Acceptance (the sample notice, Riverside East, the sample jobs, a plan for today):
-  - [ ] With no backup: Sew the choir order 09:00–11:00, Pump water to the tank 11:00–12:00, Charge phones and the power bank 12:00–13:00 and Iron school uniforms 15:00–15:45. Slow-cook the beans is under Didn't fit with "Needs 5 h in one go; the longest powered stretch left is 4 h 15 min. This job can run on backup. Set your backup hours to try it."
+  - [ ] With no backup: Sew the choir order 09:00–10:30, Pump water to the tank 10:30–11:30, Charge phones and the power bank 11:30–12:30 and Iron school uniforms 15:00–15:45. Slow-cook the beans is under Didn't fit with "Needs 5 h in one go; the longest powered stretch left is 4 h 15 min. This job can run on backup. Set your backup hours to try it."
   - [ ] With 1 hour or more of backup: the same four jobs, and Slow-cook the beans 15:45–20:45 with "On backup 20:00–20:45", and nothing under Didn't fit.
   - [ ] No block on the timeline touches a grey outage band except a time marked as backup, and backup time never exceeds the hours set.
 

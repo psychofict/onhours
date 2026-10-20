@@ -14,9 +14,9 @@ const clock = (plan) => plan.placed.map((p) => `${toClock(p.start)}-${toClock(p.
 test("sample day for Riverside East with no backup places four jobs and misses the beans", () => {
   const plan = planDay({ outages: RIVERSIDE_EAST, jobs: SAMPLE_JOBS });
   assert.deepEqual(clock(plan), [
-    "09:00-11:00 Sew the choir order",
-    "11:00-12:00 Pump water to the tank",
-    "12:00-13:00 Charge phones and the power bank",
+    "09:00-10:30 Sew the choir order",
+    "10:30-11:30 Pump water to the tank",
+    "11:30-12:30 Charge phones and the power bank",
     "15:00-15:45 Iron school uniforms",
   ]);
   assert.equal(plan.unplaced.length, 1);
@@ -135,8 +135,18 @@ test("the copied message lists the plan in time order and names the backup", () 
   const plan = planDay({ outages: RIVERSIDE_EAST, jobs: SAMPLE_JOBS, backupMinutes: 60 });
   const text = planToText(plan, "Riverside East", "Thursday 22 October");
   assert.ok(text.startsWith("Power plan for Riverside East, Thursday 22 October\nPower off: 05:00–09:00, 13:00–15:00, 20:00–23:00\nBackup: 1 h"));
-  assert.match(text, /09:00–11:00 {2}Sew the choir order/);
+  assert.match(text, /09:00–10:30 {2}Sew the choir order/);
   assert.match(text, /15:45–20:45 {2}Slow-cook the beans \(on backup 20:00–20:45\)/);
   const noBackup = planToText(planDay({ outages: RIVERSIDE_EAST, jobs: SAMPLE_JOBS }), "Riverside East");
   assert.match(noBackup, /Didn't fit:\n- Slow-cook the beans: Needs 5 h in one go/);
+});
+
+test("a short job fits the gap before the afternoon cut, with or without backup", () => {
+  const jobs = [...SAMPLE_JOBS, { name: "Charge the radio", minutes: 30, must: false, backup: false }];
+  for (const backupMinutes of [0, 60]) {
+    const plan = planDay({ outages: RIVERSIDE_EAST, jobs, backupMinutes });
+    const radio = plan.placed.find((p) => p.job.name === "Charge the radio");
+    assert.equal(`${toClock(radio.start)}-${toClock(radio.end)}`, "12:30-13:00");
+  }
+  assert.equal(planDay({ outages: RIVERSIDE_EAST, jobs, backupMinutes: 60 }).unplaced.length, 0);
 });

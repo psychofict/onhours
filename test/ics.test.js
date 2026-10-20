@@ -20,7 +20,7 @@ test("the file is a calendar with one event per cut and per placed job", () => {
 });
 
 test("times are floating local times on the chosen day", () => {
-  assert.match(ics, /DTSTART:20261022T090000\r\nDTEND:20261022T110000\r\nSUMMARY:Sew the choir order/);
+  assert.match(ics, /DTSTART:20261022T090000\r\nDTEND:20261022T103000\r\nSUMMARY:Sew the choir order/);
   assert.match(ics, /DTSTART:20261022T154500\r\nDTEND:20261022T204500\r\nSUMMARY:Slow-cook the beans/);
   assert.match(ics, /DTSTART:20261022T130000\r\nDTEND:20261022T150000\r\nSUMMARY:Power off · Riverside East/);
   assert.equal(/DTSTART;TZID|DTSTART:[0-9T]+Z/.test(ics), false, "no time zone, so the clock time travels with the phone");

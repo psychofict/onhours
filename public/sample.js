@@ -13,7 +13,7 @@ Supply will be restored as soon as works are complete. Forwarded as received.`;
 export const SAMPLE_JOBS = [
   { name: "Pump water to the tank", minutes: 60, must: true, backup: false },
   { name: "Iron school uniforms", minutes: 45, must: true, backup: false },
-  { name: "Sew the choir order", minutes: 120, must: true, backup: true },
+  { name: "Sew the choir order", minutes: 90, must: true, backup: true },
   { name: "Charge phones and the power bank", minutes: 60, must: true, backup: true },
   { name: "Slow-cook the beans", minutes: 300, must: false, backup: true },
 ];
