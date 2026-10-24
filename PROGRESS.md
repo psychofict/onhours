@@ -46,3 +46,9 @@ Three simulated judges read the finished version 2 (`submission/JUDGE-SIMULATION
 - The film was rebuilt: `submission/onhours-demo-v2.mp4` is now 2:39.2 (was 2:18.9), with two new beats (the messy photo, the revised notice), an airplane-mode panel, a rebuilt home-screen scene, a demo clock of 08:00 stated on screen, a 12% larger phone, a larger laptop view, captions placed beside the phone, a shorter lead-in, and every action timed from the narration (`tools/video/segments.cjs`). -16.2 LUFS, true peak -1.3 dBFS. The gallery was remade at the same clock and now ends with a what-moved image.
 - Written for the people who submit: `submission/RULES-CHECK.md` (every rule with evidence and what is left for a person) and `submission/UPGRADE-RESULT.md`.
 - The comments and error message in `.github/workflows/no-direct-anthropic.yml` now refer to the company's model gateway in general words, without its address; the check itself is unchanged.
+
+## 24 October 2026: the film and the entry
+
+- The version 2 film is public on YouTube: https://youtu.be/1C87Fm40m0w. The Devpost entry (project 1247411) now has that film, the version 2 pitch and About text, the six gallery images in order with their captions, and a technology answer that covers version 2. It stays submitted (5 of 5 steps) and can be edited until 26 October 2026, 17:00 EDT. Checked signed out on the public page.
+- The GitHub copy is offline while GitHub reviews the company's account (https://github.com/psychofict/onhours answers 404), so the code is now public on GitLab: https://gitlab.com/ebenworks-systems/onhours, with the full history, pushed with its own deploy key after the company's secret scan found nothing in the 31 commits. GitLab detects the MIT licence. The entry's Try it out link and licence URL, the README's clone command and `submission/devpost-text.md` point there, and the About text says why. The film's last caption still names the GitHub copy.
+

@@ -23,7 +23,7 @@ The AI only reads the notice. Placing the jobs is ordinary, tested code in [`pub
 You need [Node.js](https://nodejs.org/) 20 or newer. There are no packages to install.
 
 ```sh
-git clone https://github.com/psychofict/onhours.git
+git clone https://gitlab.com/ebenworks-systems/onhours.git
 cd onhours
 node server/index.js
 ```

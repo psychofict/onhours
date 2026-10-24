@@ -32,6 +32,8 @@ Speech input stays cut (it needs the network, which is what the product avoids).
 
 ## What a person has to do
 
+Done on 24 October 2026: step 1 (the film is public at https://youtu.be/1C87Fm40m0w and on the form), step 4 (the text and the six images are on the entry) and the submission in step 8. For step 2, GitHub has the company's account offline, so version 2 is public on GitLab instead (`PROGRESS.md`, 24 October).
+
 1. Listen to the film once. Then upload `submission/onhours-demo-v2.mp4` to YouTube as public (or to Vimeo), and put the link in the "Video" line of `submission/devpost-text.md` and on the form. The only YouTube link now is version 1.
 2. Push version 2 through the company's push queue. The repository on GitHub still holds version 1; the local branch is ahead by the commits listed by `git log origin/main..HEAD`. After the push, look at the About box on GitHub and confirm it shows the MIT licence.
 3. Decide about `.github/workflows/no-direct-anthropic.yml`. It is written by the infra scripts (it says not to edit it here), it is already public, and it names the model gateway's address. If that address should not be public, change the script in `ebenworks-infra`, regenerate the file and push.
