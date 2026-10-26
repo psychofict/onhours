@@ -63,7 +63,7 @@ The most important step is one we have not taken: trying OnHours with real house
 
 Ebenworks is an AI product company for the people who keep the world running: the shop owner, the nurse, the family carer, the contractor, the organiser and the artist. OnHours is a small test of that idea for the person running a household or a home workshop around the grid.
 
-The company's GitHub account is under review by GitHub, so the code is on GitLab, public and MIT-licensed, and a GitHub copy follows when access returns.
+The code is public on GitHub under the MIT licence.
 
 ## Built with
 
@@ -75,7 +75,7 @@ Node.js 20 (no packages), plain JavaScript, HTML and CSS, a service worker and w
 
 ## Links
 
-- Repository: https://gitlab.com/ebenworks-systems/onhours
+- Repository: https://github.com/psychofict/onhours
 - Video: https://youtu.be/1C87Fm40m0w (`submission/onhours-demo-v2.mp4`)
 - Planning documents: `devpost/scope.md`, `devpost/prd.md`, `devpost/spec.md`, `devpost/checklist.md` in the repository
 
