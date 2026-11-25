@@ -133,7 +133,7 @@ The acceptance lines below were checked on 21 October 2026: every line by `node 
 ## What We're Building
 Reading a notice from a photo or text (AI, then rules), choosing an area, setting backup hours, the jobs list with plain-word entry, planning the day with backup and reasons for misses, the ribbon and timeline, Right now, what moved and why when a revised notice arrives, installable offline use with a saved household, and the three ways to share the plan.
 
-## Deferred From the POC
+## Deferred From v1
 - Several days in one notice: the plan is for one day.
 - A changeable day start and end.
 - Pausable jobs: a job that can stop and restart changes what "fits" means.

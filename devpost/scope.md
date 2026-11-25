@@ -29,7 +29,7 @@ Ebenworks builds AI products for the people who keep the world running: the shop
 ## What "Working" Looks Like
 Open OnHours on a phone and a laptop. Choose the sample photo of a notice and watch it become six areas with their outage times. Pick Riverside East, keep the sample jobs, and press Plan my day. The ribbon and timeline show each job in a powered stretch; the slow-cooked beans do not fit, with the reason in one line. Set the backup to 1 hour and the beans fit, with a note to switch to the inverter at 20:00. Switch the network off and reload: the plan is still there, with a "Right now" card saying when the power returns. Send the plan as a picture. Press Use a revised notice and read it: the iron moves to 16:00 and the beans stop fitting, each with a reason.
 
-## The POC Boundary
+## The v1 Boundary
 - One installable page that runs from a Node server with no packages, and offline after the first visit.
 - Read a notice from a photo (with an AI model that can see images) or from pasted text (with an AI model or with built-in rules, which also run on the phone).
 - Pick one area, edit a short list of jobs (name, how long, must-do, can run on backup), set the backup hours.

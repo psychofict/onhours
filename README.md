@@ -4,7 +4,7 @@
 
 ![OnHours: the opening screen with an example day](submission/gallery/01-cover.jpg)
 
-OnHours is a proof of concept built for Devpost's [Build With AI: Basics](https://learn-ai-basics.devpost.com/) with the Devpost Learn skill pack. It is open source under the MIT licence. The notice, areas and jobs in the sample data are fictional.
+OnHours turns load-shedding notices into a day plan for the jobs that need power. Built for Devpost's [Build With AI: Basics](https://learn-ai-basics.devpost.com/) with the Devpost Learn skill pack, open source under the MIT licence. The notice, areas and jobs in the sample data are fictional.
 
 ## What it does
 

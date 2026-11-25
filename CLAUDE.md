@@ -4,7 +4,7 @@ Working instructions for this repository.
 
 ## What this is
 
-OnHours is a phone-first, installable one-page proof of concept: photograph or paste a power-cut notice, choose an area, list the jobs that need electricity, set backup hours if there is a battery or inverter, and get a day plan that fits each job into an unbroken stretch, with a reason for every job that does not fit. It works offline after one visit. It was built with the Devpost Learn skill pack; the plan lives in `devpost/` (scope, PRD, spec, checklist, and `UPGRADE-PLAN.md` for version 2). Read those before changing behaviour, and keep them in step with the code: a change to what the app does updates `devpost/prd.md`, and a change to how it is built updates `devpost/spec.md`, in the same commit.
+OnHours is a phone-first, installable one-page app: photograph or paste a power-cut notice, choose an area, list the jobs that need electricity, set backup hours if there is a battery or inverter, and get a day plan that fits each job into an unbroken stretch, with a reason for every job that does not fit. It works offline after one visit. It was built with the Devpost Learn skill pack; the plan lives in `devpost/` (scope, PRD, spec, checklist, and `UPGRADE-PLAN.md` for version 2). Read those before changing behaviour, and keep them in step with the code: a change to what the app does updates `devpost/prd.md`, and a change to how it is built updates `devpost/spec.md`, in the same commit.
 
 ## Run and test
 
