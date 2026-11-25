@@ -1,6 +1,6 @@
 # OnHours
 
-**Plan your day around the power cuts.** Photograph the outage notice from your group chat, or paste its text. OnHours finds your area's power cuts, fits every job that needs electricity into an unbroken stretch when the power is on, and says plainly why a job does not fit. It runs on a phone with no power and no network.
+**Plan your day around the power cuts.** Photograph the outage notice from your group chat, or paste its text. OnHours finds your area's power cuts, fits every job that needs electricity into an unbroken stretch when the power is on, and says plainly why a job does not fit. After one visit it keeps running on your phone with no power and no network.
 
 ![OnHours: the opening screen with an example day](submission/gallery/01-cover.jpg)
 
